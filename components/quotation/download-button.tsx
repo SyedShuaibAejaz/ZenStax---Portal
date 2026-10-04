@@ -25,12 +25,19 @@ export function DownloadQuotationButton({
         throw new Error("Could not generate PDF.");
       }
 
+      const disposition = response.headers.get("Content-Disposition") ?? "";
+      const encodedName = disposition.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
+      const plainName = disposition.match(/filename="([^"]+)"/i)?.[1];
+      const fileName = encodedName
+        ? decodeURIComponent(encodedName)
+        : plainName ?? "quotation.pdf";
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
 
       link.href = url;
-      link.download = "zenstax-quotation.pdf";
+      link.download = fileName;
 
       document.body.appendChild(link);
       link.click();

@@ -5,6 +5,7 @@ import {
   QuotationDocument,
   type QuotationPdfData,
 } from "@/lib/pdf/quotation-document";
+import { attachmentHeader, buildPdfFileName } from "@/lib/pdf/file-name";
 import { createClient } from "@/lib/supabase/server";
 
 type RouteContext = {
@@ -87,7 +88,9 @@ export async function GET(
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${quotation.quotation_number}.pdf"`,
+        "Content-Disposition": attachmentHeader(
+          buildPdfFileName(quotation.quotation_number, quotation.clients, "Quotation"),
+        ),
         "Cache-Control": "private, no-store",
       },
     });

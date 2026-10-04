@@ -5,6 +5,7 @@ import {
   QuotationDocument,
   type QuotationPdfData,
 } from "@/lib/pdf/quotation-document";
+import { attachmentHeader, buildPdfFileName } from "@/lib/pdf/file-name";
 import { createClient } from "@/lib/supabase/server";
 
 
@@ -84,16 +85,13 @@ export async function GET(
       />,
     );
 
-    const safeNumber = quotation.quotation_number.replace(
-      /[^a-zA-Z0-9_-]/g,
-      "_",
-    );
-
     return new Response(new Uint8Array(pdfBuffer), {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${safeNumber}.pdf"`,
+        "Content-Disposition": attachmentHeader(
+          buildPdfFileName(quotation.quotation_number, quotation.clients, "Quotation"),
+        ),
         "Cache-Control": "private, no-store",
       },
     });

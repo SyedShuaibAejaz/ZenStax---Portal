@@ -59,11 +59,18 @@ export type InvoicePdfData = {
   vat_amount: number | string;
   total: number | string;
   amount_paid: number | string;
+  credited_amount?: number | string | null;
   notes: string | null;
   custom_columns?: InvoicePdfCustomColumn[] | null;
   clients: InvoicePdfClient | InvoicePdfClient[] | null;
   invoice_items: InvoicePdfItem[];
   business?: InvoicePdfBusiness;
+  /** Set when this document is a tax credit note rather than an invoice. */
+  credit_note?: {
+    reason: string;
+    original_invoice_number: string;
+    original_issue_date: string;
+  } | null;
 };
 
 /* ---------- Assets (logo + font) ---------- */
@@ -707,9 +714,12 @@ export function InvoiceDocument({
     terms_and_conditions: null,
   };
 
+  const creditNote = data.credit_note ?? null;
+  const isCreditNote = creditNote !== null;
   const total = Number(data.total ?? 0);
   const amountPaid = Number(data.amount_paid ?? 0);
-  const amountDue = Math.max(total - amountPaid, 0);
+  const credited = Number(data.credited_amount ?? 0);
+  const amountDue = Math.max(total - credited - amountPaid, 0);
 
   const showBrandText = SHOW_BRAND_TEXT || !hasLogo;
 
@@ -732,7 +742,7 @@ export function InvoiceDocument({
 
   return (
     <Document
-      title={`Invoice ${data.invoice_number}`}
+      title={`${isCreditNote ? "Credit Note" : "Invoice"} ${data.invoice_number}`}
       author={business.business_name}
       subject={`${business.business_name} invoice`}
     >
@@ -761,7 +771,9 @@ export function InvoiceDocument({
             </View>
 
             <View style={styles.titleBlock}>
-              <Text style={styles.invoiceTitle}>TAX INVOICE</Text>
+              <Text style={styles.invoiceTitle}>
+                {isCreditNote ? "TAX CREDIT NOTE" : "TAX INVOICE"}
+              </Text>
 
               <View style={styles.titleMetaRow}>
                 <View style={styles.statusBadge}>
@@ -843,21 +855,43 @@ export function InvoiceDocument({
           </View>
 
           <View style={styles.detailsColumn}>
-            <Text style={styles.sectionLabel}>Invoice details</Text>
+            <Text style={styles.sectionLabel}>
+              {isCreditNote ? "Credit note details" : "Invoice details"}
+            </Text>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Invoice date</Text>
+              <Text style={styles.detailLabel}>
+                {isCreditNote ? "Credit note date" : "Invoice date"}
+              </Text>
               <Text style={styles.detailValue}>
                 {formatDate(data.issue_date)}
               </Text>
             </View>
 
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Due date</Text>
-              <Text style={styles.detailValue}>
-                {formatDate(data.due_date)}
-              </Text>
-            </View>
+            {creditNote ? (
+              <>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Original invoice</Text>
+                  <Text style={styles.detailValue}>
+                    {creditNote.original_invoice_number}
+                  </Text>
+                </View>
+
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Invoice date</Text>
+                  <Text style={styles.detailValue}>
+                    {formatDate(creditNote.original_issue_date)}
+                  </Text>
+                </View>
+              </>
+            ) : (
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Due date</Text>
+                <Text style={styles.detailValue}>
+                  {formatDate(data.due_date)}
+                </Text>
+              </View>
+            )}
 
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Currency</Text>
@@ -1041,7 +1075,9 @@ export function InvoiceDocument({
             </View>
 
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total</Text>
+              <Text style={styles.totalLabel}>
+                {isCreditNote ? "Total credited" : "Total"}
+              </Text>
               <Text style={styles.totalValue}>
                 {data.currency} {numberValue(data.total)}
               </Text>
@@ -1049,6 +1085,14 @@ export function InvoiceDocument({
           </View>
         </View>
 
+        {creditNote && (
+          <View style={styles.notesSection} wrap={false}>
+            <Text style={styles.sectionLabel}>Reason for credit</Text>
+            <Text style={styles.notesText}>{creditNote.reason}</Text>
+          </View>
+        )}
+
+        {!isCreditNote && (
         <View style={styles.paymentSummary} wrap={false}>
           <View style={styles.paymentSummaryBox}>
             <View style={styles.paymentRow}>
@@ -1057,6 +1101,15 @@ export function InvoiceDocument({
                 {data.currency} {amountPaid.toFixed(2)}
               </Text>
             </View>
+
+            {credited > 0 && (
+              <View style={styles.paymentRow}>
+                <Text style={styles.paymentLabel}>Credited</Text>
+                <Text style={styles.paidValue}>
+                  {data.currency} {credited.toFixed(2)}
+                </Text>
+              </View>
+            )}
 
             <View style={styles.paymentRow}>
               <Text style={styles.paymentLabel}>Amount due</Text>
@@ -1067,6 +1120,8 @@ export function InvoiceDocument({
           </View>
         </View>
 
+        )}
+
         {data.notes && (
           <View style={styles.notesSection} wrap={false}>
             <Text style={styles.sectionLabel}>Notes</Text>
@@ -1074,14 +1129,14 @@ export function InvoiceDocument({
           </View>
         )}
 
-        {business.bank_details && (
+        {!isCreditNote && business.bank_details && (
           <View style={styles.bankSection} wrap={false}>
             <Text style={styles.sectionLabel}>Payment details</Text>
             <Text style={styles.bankText}>{business.bank_details}</Text>
           </View>
         )}
 
-        {business.terms_and_conditions && (
+        {!isCreditNote && business.terms_and_conditions && (
           <View style={styles.notesSection}>
             <Text style={styles.sectionLabel}>
               Terms and conditions

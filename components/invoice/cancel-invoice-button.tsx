@@ -21,7 +21,7 @@ export function CancelInvoiceButton({
 
   async function handleCancel() {
     const reason = window.prompt(
-      `Cancel invoice ${invoiceNumber}?\n\nThe invoice keeps its number and stays on record as cancelled. This cannot be undone.\n\nReason for cancelling:`,
+      `Cancel invoice ${invoiceNumber}?\n\nA credit note for the full amount will be issued and the invoice marked cancelled. Both keep their numbers on record. This cannot be undone.\n\nReason for cancelling:`,
     );
 
     if (reason === null) {

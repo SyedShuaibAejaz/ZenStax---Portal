@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { attachmentHeader, buildPdfFileName } from "@/lib/pdf/file-name";
 import { createClient } from "@/lib/supabase/server";
 
 type RouteContext = {
@@ -26,7 +27,7 @@ export async function GET(
 
   const { data: invoice, error } = await supabase
     .from("invoices")
-    .select("pdf_path")
+    .select("pdf_path, invoice_number, clients (name, company_name)")
     .eq("id", id)
     .single();
 
@@ -40,7 +41,9 @@ export async function GET(
   const { data: signedFile, error: signedUrlError } =
     await supabase.storage
       .from("zenstax-private")
-      .createSignedUrl(invoice.pdf_path, 60 * 10);
+      .createSignedUrl(invoice.pdf_path, 60 * 10, {
+        download: buildPdfFileName(invoice.invoice_number, invoice.clients, "Invoice"),
+      });
 
   if (signedUrlError || !signedFile?.signedUrl) {
     return NextResponse.json(

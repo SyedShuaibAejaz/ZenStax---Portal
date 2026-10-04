@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   ChevronLeft,
   ChevronRight,
+  FileMinus,
   FileText,
   FolderOpen,
   LayoutDashboard,
@@ -37,6 +38,11 @@ const navigationItems = [
     href: "/invoices",
     label: "Invoices",
     icon: Receipt,
+  },
+  {
+    href: "/credit-notes",
+    label: "Credit notes",
+    icon: FileMinus,
   },
   {
     href: "/documents",

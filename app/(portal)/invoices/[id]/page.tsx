@@ -82,6 +82,7 @@ export default async function InvoiceDetailsPage({
         vat_amount,
         total,
         amount_paid,
+        credited_amount,
         notes,
         pdf_path,
         custom_columns,
@@ -94,6 +95,13 @@ export default async function InvoiceDetailsPage({
           phone,
           address,
           trn
+        ),
+        credit_notes (
+          id,
+          credit_note_number,
+          issue_date,
+          reason,
+          total
         ),
         invoice_items (
           id,
@@ -117,7 +125,22 @@ export default async function InvoiceDetailsPage({
     ? invoice.clients[0]
     : invoice.clients;
 
-      const customColumns = parseCustomColumns(invoice.custom_columns); 
+  const customColumns = parseCustomColumns(invoice.custom_columns);
+
+  const total = Number(invoice.total ?? 0);
+  const credited = Number(invoice.credited_amount ?? 0);
+  const paid = Number(invoice.amount_paid ?? 0);
+  const netTotal = Math.max(total - credited, 0);
+  const balance = netTotal - paid;
+
+  const creditNotes = [...(invoice.credit_notes ?? [])].sort((a, b) =>
+    a.credit_note_number.localeCompare(b.credit_note_number),
+  );
+
+  const canCredit =
+    invoice.status !== "draft" &&
+    invoice.status !== "cancelled" &&
+    credited < total - 0.005;
 
   return (
     <section className="mx-auto max-w-6xl">
@@ -167,9 +190,16 @@ export default async function InvoiceDetailsPage({
             />
           )}
 
-          {invoice.status !== "draft" &&
-            invoice.status !== "cancelled" &&
-            Number(invoice.amount_paid ?? 0) === 0 && (
+          {canCredit && (
+            <Link
+              href={`/invoices/${invoice.id}/credit-note`}
+              className="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50"
+            >
+              Issue credit note
+            </Link>
+          )}
+
+          {canCredit && paid === 0 && (
               <CancelInvoiceButton
                 invoiceId={invoice.id}
                 invoiceNumber={invoice.invoice_number}
@@ -307,23 +337,74 @@ export default async function InvoiceDetailsPage({
               <dd>{formatCurrency(invoice.vat_amount, invoice.currency)}</dd>
             </div>
 
-            {invoice.status !== "cancelled" && (
-              <InvoiceStatusActions
-                invoiceId={invoice.id}
-                currentStatus={invoice.status}
-                currentAmountPaid={Number(invoice.amount_paid)}
-                total={Number(invoice.total)}
-              />
-            )}
-
             <div className="flex justify-between border-t border-border pt-3 text-lg font-semibold">
               <dt>Total</dt>
               <dd className="text-zen-orange">
                 {formatCurrency(invoice.total, invoice.currency)}
               </dd>
             </div>
+
+            {credited > 0 && (
+              <div className="flex justify-between">
+                <dt className="text-muted-foreground">Credited</dt>
+                <dd>- {formatCurrency(credited, invoice.currency)}</dd>
+              </div>
+            )}
+
+            {paid > 0 && (
+              <div className="flex justify-between">
+                <dt className="text-muted-foreground">Paid</dt>
+                <dd>- {formatCurrency(paid, invoice.currency)}</dd>
+              </div>
+            )}
+
+            {(credited > 0 || paid > 0) && (
+              <div className="flex justify-between font-semibold">
+                <dt>{balance < 0 ? "Refund due to client" : "Balance due"}</dt>
+                <dd>{formatCurrency(Math.abs(balance), invoice.currency)}</dd>
+              </div>
+            )}
+
+            {invoice.status !== "cancelled" && (
+              <InvoiceStatusActions
+                invoiceId={invoice.id}
+                currentStatus={invoice.status}
+                currentAmountPaid={paid}
+                total={netTotal}
+              />
+            )}
           </dl>
         </div>
+
+        {creditNotes.length > 0 && (
+          <div className="border-t border-border pt-6">
+            <h3 className="font-semibold">Credit notes</h3>
+
+            <ul className="mt-3 divide-y divide-border rounded-lg border border-border">
+              {creditNotes.map((note) => (
+                <li
+                  key={note.id}
+                  className="flex flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <Link
+                      href={`/credit-notes/${note.id}`}
+                      className="font-medium text-zen-orange hover:underline"
+                    >
+                      {note.credit_note_number}
+                    </Link>
+                    <span className="ml-2 text-muted-foreground">
+                      {formatDate(note.issue_date)} · {note.reason}
+                    </span>
+                  </div>
+                  <span className="font-medium">
+                    - {formatCurrency(note.total, invoice.currency)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {invoice.notes && (
           <div className="border-t border-border pt-6">

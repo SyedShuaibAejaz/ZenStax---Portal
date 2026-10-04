@@ -327,8 +327,66 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_note_items: {
+        Row: {
+          created_at: string
+          credit_note_id: string
+          custom_values: Json
+          description: string
+          id: string
+          invoice_item_id: string
+          line_total: number
+          quantity: number
+          unit_price: number
+          vat_rate: number
+        }
+        Insert: {
+          created_at?: string
+          credit_note_id: string
+          custom_values?: Json
+          description: string
+          id?: string
+          invoice_item_id: string
+          line_total: number
+          quantity: number
+          unit_price: number
+          vat_rate?: number
+        }
+        Update: {
+          created_at?: string
+          credit_note_id?: string
+          custom_values?: Json
+          description?: string
+          id?: string
+          invoice_item_id?: string
+          line_total?: number
+          quantity?: number
+          unit_price?: number
+          vat_rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_note_items_credit_note_id_fkey"
+            columns: ["credit_note_id"]
+            isOneToOne: false
+            referencedRelation: "credit_notes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_note_items_invoice_item_id_fkey"
+            columns: ["invoice_item_id"]
+            isOneToOne: false
+            referencedRelation: "invoice_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credit_notes: {
         Row: {
+          currency: string
+          custom_columns: Json
+          discount: number
+          workspace_id: string | null
           client_id: string
           created_at: string
           created_by: string
@@ -343,6 +401,10 @@ export type Database = {
           vat_amount: number
         }
         Insert: {
+          currency?: string
+          custom_columns?: Json
+          discount?: number
+          workspace_id?: string | null
           client_id: string
           created_at?: string
           created_by: string
@@ -357,6 +419,10 @@ export type Database = {
           vat_amount?: number
         }
         Update: {
+          currency?: string
+          custom_columns?: Json
+          discount?: number
+          workspace_id?: string | null
           client_id?: string
           created_at?: string
           created_by?: string
@@ -606,6 +672,7 @@ export type Database = {
       }
       invoices: {
         Row: {
+          credited_amount: number
           cancellation_reason: string | null
           cancelled_at: string | null
           cancelled_by: string | null
@@ -635,6 +702,7 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          credited_amount?: number
           cancellation_reason?: string | null
           cancelled_at?: string | null
           cancelled_by?: string | null
@@ -664,6 +732,7 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          credited_amount?: number
           cancellation_reason?: string | null
           cancelled_at?: string | null
           cancelled_by?: string | null
@@ -1049,6 +1118,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_credit_note: {
+        Args: { p_invoice_id: string; p_items?: Json; p_reason: string }
+        Returns: string
+      }
       can_edit_company_settings: {
         Args: { p_user_id?: string; p_workspace_id: string }
         Returns: boolean

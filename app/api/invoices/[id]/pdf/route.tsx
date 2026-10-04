@@ -6,6 +6,7 @@ import {
   type InvoicePdfData,
 } from "@/lib/pdf/invoice-document";
 import { getBusinessDetails } from "@/lib/pdf/get-business-details";
+import { attachmentHeader, buildPdfFileName } from "@/lib/pdf/file-name";
 import { createClient } from "@/lib/supabase/server";
 
 type RouteContext = {
@@ -103,7 +104,9 @@ export async function GET(
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${invoice.invoice_number}.pdf"`,
+        "Content-Disposition": attachmentHeader(
+          buildPdfFileName(invoice.invoice_number, invoice.clients, "Invoice"),
+        ),
         "Cache-Control": "private, no-store",
       },
     });
