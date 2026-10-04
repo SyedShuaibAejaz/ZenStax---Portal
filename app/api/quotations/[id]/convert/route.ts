@@ -235,6 +235,9 @@ export async function POST(
           "workspace_id",
           workspaceId,
         )
+        // A cancelled invoice doesn't count: the quotation can be invoiced again.
+        .neq("status", "cancelled")
+        .limit(1)
         .maybeSingle();
 
     if (existingInvoiceError) {

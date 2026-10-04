@@ -43,24 +43,13 @@ export async function DELETE(
       );
     }
 
-    if (Number(invoice.amount_paid ?? 0) > 0) {
+    // Only drafts can be deleted. Issued invoices are permanent records and
+    // must be cancelled instead (the database enforces this as well).
+    if (invoice.status !== "draft") {
       return NextResponse.json(
         {
           error:
-            "Paid invoices cannot be deleted.",
-        },
-        { status: 409 },
-      );
-    }
-
-    if (
-      invoice.status === "paid" ||
-      invoice.status === "partially_paid"
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            "Paid or partially paid invoices cannot be deleted.",
+            "Issued invoices cannot be deleted. Cancel the invoice instead.",
         },
         { status: 409 },
       );

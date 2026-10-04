@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { InvoiceStatusActions } from "@/components/invoice/invoice-status-actions";
 import { SaveInvoicePdfButton } from "@/components/invoice/save-invoice-button";
 import { createClient } from "@/lib/supabase/server";
+import { CancelInvoiceButton } from "@/components/invoice/cancel-invoice-button";
 import { DeleteInvoiceButton } from "@/components/invoice/delete-invoice-button";
 
 export const instant = false;
@@ -84,6 +85,8 @@ export default async function InvoiceDetailsPage({
         notes,
         pdf_path,
         custom_columns,
+        cancelled_at,
+        cancellation_reason,
         clients (
           name,
           company_name,
@@ -157,12 +160,38 @@ export default async function InvoiceDetailsPage({
             Download PDF
           </Link>
 
-          <DeleteInvoiceButton
-            invoiceId={invoice.id}
-            invoiceNumber={invoice.invoice_number}
-          />
+          {invoice.status === "draft" && (
+            <DeleteInvoiceButton
+              invoiceId={invoice.id}
+              invoiceNumber={invoice.invoice_number}
+            />
+          )}
+
+          {invoice.status !== "draft" &&
+            invoice.status !== "cancelled" &&
+            Number(invoice.amount_paid ?? 0) === 0 && (
+              <CancelInvoiceButton
+                invoiceId={invoice.id}
+                invoiceNumber={invoice.invoice_number}
+              />
+            )}
         </div>
       </div>
+
+      {invoice.status === "cancelled" && (
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <p className="font-semibold">
+            This invoice was cancelled
+            {invoice.cancelled_at
+              ? ` on ${formatDate(invoice.cancelled_at.slice(0, 10))}`
+              : ""}
+            .
+          </p>
+          {invoice.cancellation_reason && (
+            <p className="mt-1">Reason: {invoice.cancellation_reason}</p>
+          )}
+        </div>
+      )}
 
       <div className="space-y-6 rounded-2xl border border-border bg-white p-6 shadow-sm lg:p-8">
         <div className="flex flex-col justify-between gap-6 border-b border-border pb-6 md:flex-row">
@@ -278,12 +307,14 @@ export default async function InvoiceDetailsPage({
               <dd>{formatCurrency(invoice.vat_amount, invoice.currency)}</dd>
             </div>
 
-            <InvoiceStatusActions
-              invoiceId={invoice.id}
-              currentStatus={invoice.status}
-              currentAmountPaid={Number(invoice.amount_paid)}
-              total={Number(invoice.total)}
-            />
+            {invoice.status !== "cancelled" && (
+              <InvoiceStatusActions
+                invoiceId={invoice.id}
+                currentStatus={invoice.status}
+                currentAmountPaid={Number(invoice.amount_paid)}
+                total={Number(invoice.total)}
+              />
+            )}
 
             <div className="flex justify-between border-t border-border pt-3 text-lg font-semibold">
               <dt>Total</dt>

@@ -606,6 +606,9 @@ export type Database = {
       }
       invoices: {
         Row: {
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
           amount_paid: number
           client_id: string
           created_at: string
@@ -632,6 +635,9 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           amount_paid?: number
           client_id: string
           created_at?: string
@@ -658,6 +664,9 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           amount_paid?: number
           client_id?: string
           created_at?: string
