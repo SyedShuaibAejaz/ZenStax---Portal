@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 33% 96%;
+    --foreground: 211 75% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 211 75% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 211 75% 11%;
+
+    --primary: 19 100% 57%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 45% 94%;
+    --secondary-foreground: 211 75% 11%;
+
+    --muted: 210 27% 91%;
+    --muted-foreground: 211 24% 43%;
+
+    --accent: 19 100% 57%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 210 28% 86%;
+    --input: 210 28% 86%;
+    --ring: 19 100% 57%;
+
+    --radius: 0.75rem;
+
+    --zen-navy: 211 76% 10%;
+    --zen-navy-surface: 210 68% 16%;
+    --zen-blue: 210 48% 31%;
+    --zen-orange: 19 100% 57%;
+    --zen-muted-blue: 211 24% 43%;
+  }
+
+  .dark {
+    --background: 211 76% 10%;
+    --foreground: 0 0% 98%;
+
+    --card: 210 68% 16%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 210 68% 16%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 19 100% 57%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 48% 31%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 210 48% 23%;
+    --muted-foreground: 211 24% 75%;
+
+    --accent: 19 100% 57%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 210 48% 31%;
+    --input: 210 48% 31%;
+    --ring: 19 100% 57%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+}
