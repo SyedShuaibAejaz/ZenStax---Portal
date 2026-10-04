@@ -9,6 +9,7 @@ import {
   InvoiceDocument,
   type InvoicePdfData,
 } from "@/lib/pdf/invoice-document";
+import { getBusinessDetails } from "@/lib/pdf/get-business-details";
 import { createClient } from "@/lib/supabase/server";
 
 
@@ -41,6 +42,7 @@ export async function POST(
       .select(
         `
           id,
+          workspace_id,
           invoice_number,
           issue_date,
           due_date,
@@ -82,8 +84,16 @@ export async function POST(
       );
     }
 
+    const business = await getBusinessDetails(
+      supabase,
+      invoice.workspace_id,
+    );
+
     const document = createElement(InvoiceDocument, {
-      data: invoice as unknown as InvoicePdfData,
+      data: {
+        ...(invoice as unknown as InvoicePdfData),
+        business,
+      },
     }) as ReactElement<DocumentProps>;
 
     const pdfBuffer = await renderToBuffer(document);

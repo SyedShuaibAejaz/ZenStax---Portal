@@ -1048,17 +1048,57 @@ export type Database = {
         Args: { p_user_id?: string; p_workspace_id: string }
         Returns: boolean
       }
-      can_manage_workspace:
-        | { Args: { p_workspace_id: string }; Returns: boolean }
-        | {
-            Args: { p_user_id?: string; p_workspace_id: string }
-            Returns: boolean
-          }
+      can_access_private_file: {
+        Args: { p_name: string; p_write: boolean }
+        Returns: boolean
+      }
+      can_manage_workspace: {
+        Args: { p_user_id?: string; p_workspace_id: string }
+        Returns: boolean
+      }
+      get_document_business_details: {
+        Args: { p_workspace_id: string }
+        Returns: {
+          legal_name: string
+          trading_name: string
+          email: string
+          phone: string
+          website: string
+          address_line_1: string
+          address_line_2: string
+          city: string
+          emirate: string
+          postal_code: string
+          country: string
+          trn: string
+          default_currency: string
+          default_vat_rate: number
+          quotation_validity_days: number
+          bank_name: string
+          bank_account_name: string
+          bank_account_number: string
+          iban: string
+          swift_code: string
+          payment_terms: string
+          invoice_footer: string
+          quotation_footer: string
+          authorized_signatory_name: string
+          authorized_signatory_title: string
+          logo_path: string
+          brand_primary_color: string
+          brand_secondary_color: string
+        }[]
+      }
       get_my_workspace_ids: { Args: never; Returns: string[] }
       get_workspace_role: {
         Args: { p_user_id?: string; p_workspace_id: string }
         Returns: string
       }
+      has_workspace_role: {
+        Args: { p_roles: string[]; p_workspace_id: string }
+        Returns: boolean
+      }
+      is_any_workspace_role: { Args: { p_roles: string[] }; Returns: boolean }
       is_workspace_admin: {
         Args: { requested_workspace_id: string }
         Returns: boolean
@@ -1069,6 +1109,7 @@ export type Database = {
       }
       next_invoice_number: { Args: never; Returns: string }
       next_quotation_number: { Args: never; Returns: string }
+      shares_workspace_with: { Args: { p_user_id: string }; Returns: boolean }
       refresh_invoice_payment_status: {
         Args: { p_invoice_id: string }
         Returns: {

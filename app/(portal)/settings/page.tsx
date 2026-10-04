@@ -18,6 +18,11 @@ export default async function SettingsPage() {
     redirect("/login");
   }
 
+  // The settings layout already sends non-admins away; this is a backstop.
+  if (!canEditSettings(workspace.role)) {
+    redirect("/dashboard");
+  }
+
   const supabase = await createClient();
 
   const { data: settings, error } = await supabase
