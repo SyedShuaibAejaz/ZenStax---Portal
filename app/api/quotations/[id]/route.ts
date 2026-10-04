@@ -41,21 +41,14 @@ export async function DELETE(
       );
     }
 
-    if (quotation.status === "converted") {
-      return NextResponse.json(
-        {
-          error:
-            "Converted quotations cannot be deleted. Delete or reverse the related invoice first.",
-        },
-        { status: 409 },
-      );
-    }
-
+    // Decide on the actual invoice link, not the status label: the status can
+    // be stale if an invoice was deleted.
     const { data: relatedInvoice, error: invoiceLookupError } =
       await supabase
         .from("invoices")
         .select("id")
         .eq("quotation_id", id)
+        .limit(1)
         .maybeSingle();
 
     if (invoiceLookupError) {
@@ -69,7 +62,7 @@ export async function DELETE(
       return NextResponse.json(
         {
           error:
-            "This quotation is linked to an invoice and cannot be deleted.",
+            "This quotation has an invoice. Delete the invoice first.",
         },
         { status: 409 },
       );
