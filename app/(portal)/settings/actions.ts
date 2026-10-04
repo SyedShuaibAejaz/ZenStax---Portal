@@ -29,9 +29,6 @@ function submittedValues(formData: FormData): Partial<CompanySettingsValues> {
   );
 }
 
-// Server actions accept 1 MB bodies by default, so keep the logo below that.
-const MAX_LOGO_BYTES = 900 * 1024;
-
 function readText(formData: FormData, key: string) {
   const value = formData.get(key);
 
@@ -79,7 +76,6 @@ async function save(formData: FormData): Promise<SettingsFormState> {
   const text = (key: keyof CompanySettingsValues) => readText(formData, key);
   const fieldErrors: SettingsFormState["fieldErrors"] = {};
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const colorPattern = /^#[0-9a-fA-F]{6}$/;
 
   const legalName = text("legal_name");
   if (!legalName) {
@@ -104,16 +100,6 @@ async function save(formData: FormData): Promise<SettingsFormState> {
     }
   }
 
-  const primaryColor = text("brand_primary_color");
-  if (primaryColor && !colorPattern.test(primaryColor)) {
-    fieldErrors.brand_primary_color = "Use a hex colour like #FF7425.";
-  }
-
-  const secondaryColor = text("brand_secondary_color");
-  if (secondaryColor && !colorPattern.test(secondaryColor)) {
-    fieldErrors.brand_secondary_color = "Use a hex colour like #071B31.";
-  }
-
   const vatText = text("default_vat_rate");
   const vatRate = vatText === null ? 5 : Number(vatText);
   if (!Number.isFinite(vatRate) || vatRate < 0 || vatRate > 100) {
@@ -124,17 +110,6 @@ async function save(formData: FormData): Promise<SettingsFormState> {
   const validityDays = validityText === null ? 30 : Number(validityText);
   if (!Number.isInteger(validityDays) || validityDays <= 0) {
     fieldErrors.quotation_validity_days = "Enter a whole number above 0.";
-  }
-
-  const logo = formData.get("logo");
-  const hasNewLogo = logo instanceof File && logo.size > 0;
-
-  if (hasNewLogo) {
-    if (!["image/png", "image/jpeg"].includes(logo.type)) {
-      fieldErrors.logo = "The logo must be a PNG or JPG file.";
-    } else if (logo.size > MAX_LOGO_BYTES) {
-      fieldErrors.logo = "The logo must be smaller than 900 KB.";
-    }
   }
 
   if (Object.keys(fieldErrors).length > 0 || !legalName) {
@@ -172,36 +147,9 @@ async function save(formData: FormData): Promise<SettingsFormState> {
     authorized_signatory_name: text("authorized_signatory_name"),
     authorized_signatory_title: text("authorized_signatory_title"),
     authorized_signatory_email: signatoryEmail,
-    brand_primary_color: primaryColor,
-    brand_secondary_color: secondaryColor,
-    logo_path: undefined as string | undefined,
   };
 
   const supabase = await createClient();
-
-  /* ---------- Optional logo upload ---------- */
-
-  if (hasNewLogo) {
-    const extension = logo.type === "image/png" ? "png" : "jpg";
-    const logoPath = `company/logo-${Date.now()}.${extension}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("zenstax-private")
-      .upload(logoPath, logo, {
-        contentType: logo.type,
-        upsert: true,
-      });
-
-    if (uploadError) {
-      return {
-        status: "error",
-        message: `Logo upload failed: ${uploadError.message}`,
-        fieldErrors: {},
-      };
-    }
-
-    payload.logo_path = logoPath;
-  }
 
   /* ---------- Save: update the workspace row, or create it ---------- */
 

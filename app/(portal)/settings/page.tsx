@@ -54,16 +54,6 @@ export default async function SettingsPage() {
     initialValues.country = "United Arab Emirates";
   }
 
-  let logoUrl: string | null = null;
-
-  if (typeof row.logo_path === "string" && row.logo_path) {
-    const { data: signed } = await supabase.storage
-      .from("zenstax-private")
-      .createSignedUrl(row.logo_path, 60 * 10);
-
-    logoUrl = signed?.signedUrl ?? null;
-  }
-
   return (
     <section className="mx-auto max-w-5xl">
       <div className="mb-6">
@@ -76,7 +66,6 @@ export default async function SettingsPage() {
 
       <CompanySettingsForm
         initialValues={initialValues}
-        logoUrl={logoUrl}
         canEdit={canEditSettings(workspace.role)}
       />
     </section>

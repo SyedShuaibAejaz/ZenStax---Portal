@@ -25,14 +25,12 @@ export type CompanySettingsValues = {
   authorized_signatory_name: string;
   authorized_signatory_title: string;
   authorized_signatory_email: string;
-  brand_primary_color: string;
-  brand_secondary_color: string;
 };
 
 export type SettingsFormState = {
   status: "idle" | "success" | "error";
   message: string | null;
-  fieldErrors: Partial<Record<keyof CompanySettingsValues | "logo", string>>;
+  fieldErrors: Partial<Record<keyof CompanySettingsValues, string>>;
   // What the user submitted, so the form keeps their input after an error
   values?: Partial<CompanySettingsValues>;
 };
@@ -62,8 +60,6 @@ export const TEXT_FIELDS: (keyof CompanySettingsValues)[] = [
   "authorized_signatory_name",
   "authorized_signatory_title",
   "authorized_signatory_email",
-  "brand_primary_color",
-  "brand_secondary_color",
 ];
 
 export const UAE_EMIRATES = [

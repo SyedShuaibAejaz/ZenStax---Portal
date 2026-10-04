@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 
 type CompanySettingsFormProps = {
   initialValues: CompanySettingsValues;
-  logoUrl: string | null;
   canEdit: boolean;
 };
 
@@ -124,7 +123,6 @@ function Card({
 
 export function CompanySettingsForm({
   initialValues,
-  logoUrl,
   canEdit,
 }: CompanySettingsFormProps) {
   const [state, formAction, isPending] = useActionState(
@@ -217,35 +215,6 @@ export function CompanySettingsForm({
         <Field {...shared} name="authorized_signatory_email" label="Email" type="email" />
       </Card>
 
-      <Card title="Branding">
-        <Field {...shared} name="brand_primary_color" label="Primary colour" placeholder="#FF7425" />
-        <Field {...shared} name="brand_secondary_color" label="Secondary colour" placeholder="#071B31" />
-
-        <div className="space-y-2 md:col-span-2">
-          <span className="text-sm font-medium">
-            Logo (PNG or JPG, max 900 KB)
-          </span>
-
-          {logoUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={logoUrl}
-              alt="Current logo"
-              className="h-16 w-16 rounded-lg border border-border object-contain"
-            />
-          )}
-
-          <input
-            name="logo"
-            type="file"
-            accept="image/png,image/jpeg"
-            disabled={shared.disabled}
-            className="block text-sm"
-          />
-
-          <FieldError message={state.fieldErrors.logo} />
-        </div>
-      </Card>
 
       {canEdit && (
         <div className="sticky bottom-0 flex items-center justify-end gap-4 border-t border-border bg-white/90 py-4 backdrop-blur">
