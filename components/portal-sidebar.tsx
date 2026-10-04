@@ -109,10 +109,10 @@ export function PortalSidebar({
             className="flex min-w-0 items-center"
           >
             <Image
-              src="/zenstax-logo.png"
+              src="/Zenstax-LOGO.jpg"
               alt="ZenStax"
-              width={865}
-              height={822}
+              width={2000}
+              height={2000}
               className={[
                 "shrink-0 object-contain",
                 showLabels ? "h-16 w-20" : "h-11 w-11",

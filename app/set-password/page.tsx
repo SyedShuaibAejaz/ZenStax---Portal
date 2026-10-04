@@ -258,7 +258,7 @@ export default function SetPasswordPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
           <Image
-            src="/zenstax-logo.png"
+            src="/Zenstax-LOGO.jpg"
             alt="ZenStax"
             width={200}
             height={70}

@@ -78,7 +78,7 @@ export default function LoginForm() {
 
           <div className="relative z-10 flex w-full flex-col justify-between p-16">
             <Image
-              src="/zenstax-logo.png"
+              src="/Zenstax-LOGO.jpg"
               alt="ZenStax"
               width={200}
               height={70}
@@ -146,7 +146,7 @@ export default function LoginForm() {
           <div className="w-full max-w-md">
             <div className="mb-8 flex justify-center lg:hidden">
               <Image
-                src="/zenstax-logo.png"
+                src="/Zenstax-LOGO.jpg"
                 alt="ZenStax"
                 width={190}
                 height={64}
