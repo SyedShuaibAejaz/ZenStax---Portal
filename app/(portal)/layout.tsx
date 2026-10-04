@@ -5,6 +5,10 @@ import { MobileMenuButton } from "@/components/mobile-menu-button";
 import { PortalShellProvider } from "@/components/portal-shell";
 import { PortalSidebar } from "@/components/portal-sidebar";
 import { createClient } from "@/lib/supabase/server";
+import {
+  canEditSettings,
+  getCurrentWorkspace,
+} from "@/lib/workspace/get-current-workspace";
 
 export const instant = false;
 
@@ -23,10 +27,15 @@ export default async function PortalLayout({
     redirect("/login");
   }
 
+  const workspace = await getCurrentWorkspace();
+  const canManageSettings = workspace
+    ? canEditSettings(workspace.role)
+    : false;
+
   return (
     <PortalShellProvider>
       <div className="flex h-screen overflow-hidden bg-background">
-        <PortalSidebar />
+        <PortalSidebar canManageSettings={canManageSettings} />
 
         <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <header className="z-30 flex h-24 shrink-0 items-center justify-between border-b border-border bg-white px-5 lg:px-8">

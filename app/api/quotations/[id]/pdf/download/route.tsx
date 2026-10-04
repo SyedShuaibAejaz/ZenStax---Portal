@@ -7,7 +7,6 @@ import {
 } from "@/lib/pdf/quotation-document";
 import { createClient } from "@/lib/supabase/server";
 
-export const runtime = "nodejs";
 
 type RouteContext = {
   params: Promise<{

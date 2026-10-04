@@ -156,7 +156,7 @@ async function save(formData: FormData): Promise<SettingsFormState> {
     city: text("city"),
     emirate: text("emirate"),
     postal_code: text("postal_code"),
-    country: text("country"),
+    country: text("country") ?? "United Arab Emirates",
     trn,
     default_currency: (text("default_currency") ?? "AED").toUpperCase(),
     default_vat_rate: vatRate,

@@ -47,10 +47,17 @@ const navigationItems = [
     href: "/settings",
     label: "Settings",
     icon: Settings,
+    adminOnly: true,
   },
 ];
 
-export function PortalSidebar() {
+type PortalSidebarProps = {
+  canManageSettings?: boolean;
+};
+
+export function PortalSidebar({
+  canManageSettings = false,
+}: PortalSidebarProps) {
   const pathname = usePathname();
 
   const {
@@ -135,7 +142,9 @@ export function PortalSidebar() {
           aria-label="Main navigation"
           className="min-h-0 flex-1 space-y-2 overflow-hidden p-4"
         >
-          {navigationItems.map(({ href, label, icon: Icon }) => {
+          {navigationItems
+            .filter((item) => !("adminOnly" in item) || canManageSettings)
+            .map(({ href, label, icon: Icon }) => {
             const active = isActiveRoute(href);
 
             return (

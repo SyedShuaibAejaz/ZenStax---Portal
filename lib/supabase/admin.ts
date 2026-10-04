@@ -18,8 +18,8 @@ if (!supabaseUrl || !serviceRoleKey) {
 
 export function createAdminClient() {
   return createClient<Database>(
-    supabaseUrl,
-    serviceRoleKey,
+    supabaseUrl!,
+    serviceRoleKey!,
     {
       auth: {
         autoRefreshToken: false,

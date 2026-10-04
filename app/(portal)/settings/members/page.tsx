@@ -75,6 +75,7 @@ export default async function MembersSettingsPage() {
       .from("workspace_members")
       .select("workspace_id, user_id, role, created_at")
       .eq("user_id", user.id)
+      .order("created_at", { ascending: true })
       .limit(1)
       .maybeSingle();
 
