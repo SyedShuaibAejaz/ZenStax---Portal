@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { emailTransporter } from "@/lib/email/transporter";
+import { getEmailTransporter } from "@/lib/email/transporter";
 import {
   canEditSettings,
   getCurrentWorkspace,
@@ -18,7 +18,7 @@ export async function GET() {
   }
 
   try {
-    await emailTransporter.verify();
+    await getEmailTransporter().verify();
 
     return NextResponse.json({
       success: true,
