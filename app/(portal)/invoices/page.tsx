@@ -1,5 +1,12 @@
 import Link from "next/link";
 
+import {
+  effectiveInvoiceStatus,
+  formatStatus,
+  invoiceBalance,
+  invoiceStatusClasses,
+  todayInDubai,
+} from "@/lib/invoice-status";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
@@ -9,29 +16,6 @@ function formatCurrency(
   currency: string,
 ) {
   return `${currency} ${Number(amount ?? 0).toFixed(2)}`;
-}
-
-function formatStatus(status: string) {
-  return status.replace("_", " ");
-}
-
-function statusClasses(status: string) {
-  switch (status) {
-    case "paid":
-      return "bg-green-100 text-green-700";
-
-    case "partially_paid":
-      return "bg-amber-100 text-amber-700";
-
-    case "overdue":
-      return "bg-red-100 text-red-700";
-
-    case "cancelled":
-      return "bg-slate-200 text-slate-600";
-
-    default:
-      return "bg-blue-100 text-blue-700";
-  }
 }
 
 export default async function InvoicesPage() {
@@ -49,6 +33,7 @@ export default async function InvoicesPage() {
         currency,
         total,
         amount_paid,
+        credited_amount,
         clients (
           name,
           company_name
@@ -70,6 +55,8 @@ export default async function InvoicesPage() {
       </section>
     );
   }
+
+  const today = todayInDubai();
 
   return (
     <section>
@@ -104,12 +91,18 @@ export default async function InvoicesPage() {
               <th className="px-4 py-3">Due date</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3 text-right">Total</th>
-              <th className="px-4 py-3 text-right">Paid</th>
+              <th className="px-4 py-3 text-right">Balance due</th>
             </tr>
           </thead>
 
           <tbody>
             {invoices?.map((invoice) => {
+              const status = effectiveInvoiceStatus(invoice, today);
+              const balance =
+                invoice.status === "draft" || invoice.status === "cancelled"
+                  ? 0
+                  : invoiceBalance(invoice);
+
               const client = Array.isArray(invoice.clients)
                 ? invoice.clients[0]
                 : invoice.clients;
@@ -144,26 +137,33 @@ export default async function InvoicesPage() {
 
                   <td className="px-4 py-4">
                     <span
-                      className={`inline-flex rounded-full px-3 py-1 text-xs font-medium capitalize ${statusClasses(
-                        invoice.status,
+                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ring-1 ring-inset ${invoiceStatusClasses(
+                        status,
                       )}`}
                     >
-                      {formatStatus(invoice.status)}
+                      {formatStatus(status)}
                     </span>
                   </td>
 
-                  <td className="px-4 py-4 text-right font-medium">
+                  <td className="px-4 py-4 text-right font-medium tabular-nums">
                     {formatCurrency(
                       invoice.total,
                       invoice.currency,
                     )}
                   </td>
 
-                  <td className="px-4 py-4 text-right">
-                    {formatCurrency(
-                      invoice.amount_paid,
-                      invoice.currency,
-                    )}
+                  <td
+                    className={`px-4 py-4 text-right tabular-nums ${
+                      status === "overdue"
+                        ? "font-semibold text-red-600"
+                        : balance > 0
+                          ? "font-medium"
+                          : "text-muted-foreground"
+                    }`}
+                  >
+                    {balance > 0
+                      ? formatCurrency(balance, invoice.currency)
+                      : "—"}
                   </td>
                 </tr>
               );

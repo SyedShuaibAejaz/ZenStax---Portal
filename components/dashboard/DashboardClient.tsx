@@ -2,827 +2,540 @@
 
 import Link from "next/link";
 import {
-  Area,
-  AreaChart,
+  AlertTriangle,
+  Clock,
+  FilePen,
+  FileText,
+  Receipt,
+  Wallet,
+} from "lucide-react";
+import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
-import { useState } from "react";
 
-type ChartPoint = {
-  label: string;
-  revenue: number;
-  invoices: number;
-  quotations: number;
-};
+import type { DashboardMetrics, RecentRow } from "@/lib/dashboard/metrics";
+import { formatStatus, invoiceStatusClasses } from "@/lib/invoice-status";
 
 type DashboardClientProps = {
-  paidRevenue: number;
-  outstandingAmount: number;
-  overdueAmount: number;
-  openInvoiceCount: number;
-  pendingQuotationCount: number;
-  clientCount: number;
-  invoices: Array<{
-    id: string;
-    invoice_number: string;
-    status: string;
-    currency: string;
-    total: number | string;
-    amount_paid: number | string;
-    issue_date: string;
-    due_date: string | null;
-    clients:
-      | {
-          name: string;
-          company_name: string | null;
-        }
-      | null;
-  }>;
-  quotations: Array<{
-    id: string;
-    quotation_number: string;
-    status: string;
-    currency: string;
-    total: number | string;
-    issue_date: string;
-    clients:
-      | {
-          name: string;
-          company_name: string | null;
-        }
-      | null;
-  }>;
-  documents: Array<{
-    id: string;
-    title: string;
-    category: string;
-    file_name: string;
-    created_at: string;
-  }>;
-  dailyData: ChartPoint[];
-  monthlyData: ChartPoint[];
-  yearlyData: ChartPoint[];
-  statusCounts: Record<string, number>;
+  metrics: DashboardMetrics;
+  greetingName: string | null;
+  todayLabel: string;
+  canCreate: boolean;
 };
 
-function formatMoney(
-  amount: number,
-  currency = "AED",
-) {
-  return new Intl.NumberFormat(
-    "en-AE",
-    {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    },
-  ).format(amount);
+function useMoney(currency: string) {
+  const full = new Intl.NumberFormat("en-AE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  const compact = new Intl.NumberFormat("en-AE", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  });
+
+  return {
+    full: (value: number) => `${currency} ${full.format(value)}`,
+    compact: (value: number) => `${currency} ${compact.format(value)}`,
+    short: (value: number) => compact.format(value),
+  };
 }
 
-function formatDate(
-  value: string | null,
-) {
-  if (!value) {
-    return "—";
+function Card({
+  title,
+  action,
+  children,
+  className = "",
+}: {
+  title?: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <section
+      className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ${className}`}
+    >
+      {(title || action) && (
+        <div className="mb-4 flex items-center justify-between gap-3">
+          {title && (
+            <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+          )}
+          {action}
+        </div>
+      )}
+      {children}
+    </section>
+  );
+}
+
+function Kpi({
+  label,
+  value,
+  detail,
+  icon: Icon,
+  accent,
+  href,
+}: {
+  label: string;
+  value: string;
+  detail: React.ReactNode;
+  icon: React.ComponentType<{ className?: string }>;
+  accent: "navy" | "red" | "orange" | "emerald";
+  href?: string;
+}) {
+  const accents = {
+    navy: "bg-[#071B31]/5 text-[#071B31]",
+    red: "bg-red-50 text-red-600",
+    orange: "bg-orange-50 text-[#E85D04]",
+    emerald: "bg-emerald-50 text-emerald-600",
+  };
+
+  const body = (
+    <div className="flex h-full flex-col justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow">
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-medium text-slate-500">{label}</p>
+        <span className={`rounded-lg p-2 ${accents[accent]}`}>
+          <Icon className="h-4 w-4" />
+        </span>
+      </div>
+      <div>
+        <p className="text-2xl font-semibold tracking-tight text-slate-900 tabular-nums">
+          {value}
+        </p>
+        <div className="mt-1 text-xs text-slate-500">{detail}</div>
+      </div>
+    </div>
+  );
+
+  return href ? (
+    <Link href={href} className="block">
+      {body}
+    </Link>
+  ) : (
+    body
+  );
+}
+
+function StatusPill({ status, quotation = false }: { status: string; quotation?: boolean }) {
+  const quotationClasses: Record<string, string> = {
+    accepted: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+    converted: "bg-violet-50 text-violet-700 ring-violet-600/20",
+    rejected: "bg-red-50 text-red-700 ring-red-600/20",
+    expired: "bg-slate-100 text-slate-500 ring-slate-500/20",
+    draft: "bg-slate-50 text-slate-600 ring-slate-500/20",
+    sent: "bg-blue-50 text-blue-700 ring-blue-600/20",
+  };
+
+  const classes = quotation
+    ? quotationClasses[status] ?? quotationClasses.draft
+    : invoiceStatusClasses(status);
+
+  return (
+    <span
+      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium capitalize ring-1 ring-inset ${classes}`}
+    >
+      {formatStatus(status)}
+    </span>
+  );
+}
+
+function RecentTable({
+  rows,
+  emptyText,
+  emptyHref,
+  emptyCta,
+  quotation = false,
+  format,
+}: {
+  rows: RecentRow[];
+  emptyText: string;
+  emptyHref: string;
+  emptyCta: string;
+  quotation?: boolean;
+  format: (value: number) => string;
+}) {
+  if (rows.length === 0) {
+    return (
+      <div className="rounded-xl border border-dashed border-slate-200 px-4 py-8 text-center">
+        <p className="text-sm text-slate-500">{emptyText}</p>
+        <Link
+          href={emptyHref}
+          className="mt-3 inline-block text-sm font-medium text-[#E85D04] hover:underline"
+        >
+          {emptyCta}
+        </Link>
+      </div>
+    );
   }
 
-  return new Intl.DateTimeFormat(
-    "en-AE",
-    {
-      dateStyle: "medium",
-    },
-  ).format(new Date(value));
+  return (
+    <ul className="divide-y divide-slate-100">
+      {rows.map((row) => (
+        <li key={row.id}>
+          <Link
+            href={row.href}
+            className="-mx-2 flex items-center justify-between gap-3 rounded-lg px-2 py-3 hover:bg-slate-50"
+          >
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-slate-900">{row.number}</p>
+              <p className="truncate text-xs text-slate-500">
+                {row.client} · {row.date}
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-col items-end gap-1">
+              <span className="text-sm font-medium tabular-nums text-slate-900">
+                {format(row.amount)}
+              </span>
+              <StatusPill status={row.status} quotation={quotation} />
+            </div>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 export default function DashboardClient({
-  paidRevenue,
-  outstandingAmount,
-  overdueAmount,
-  openInvoiceCount,
-  pendingQuotationCount,
-  clientCount,
-  invoices,
-  quotations,
-  documents,
-  dailyData,
-  monthlyData,
-  yearlyData,
-  statusCounts,
+  metrics,
+  greetingName,
+  todayLabel,
+  canCreate,
 }: DashboardClientProps) {
-  const [period, setPeriod] =
-    useState<"daily" | "monthly" | "yearly">(
-      "monthly",
-    );
+  const money = useMoney(metrics.currency);
 
-  const chartData =
-    period === "daily"
-      ? dailyData
-      : period === "yearly"
-        ? yearlyData
-        : monthlyData;
+  const agingTotal = metrics.aging.reduce((sum, b) => sum + b.amount, 0);
+  const hasChartData = metrics.monthly.some((m) => m.invoiced > 0);
 
-  const statusData = Object.entries(
-    statusCounts,
-  ).map(([name, value]) => ({
-    name,
-    value,
-  }));
+  const attentionIcon = {
+    overdue: <AlertTriangle className="h-4 w-4 text-red-600" />,
+    expiring: <Clock className="h-4 w-4 text-amber-600" />,
+    draft: <FilePen className="h-4 w-4 text-slate-500" />,
+  };
 
   return (
-    <main className="min-h-screen bg-[#F6F8FB] px-4 py-7 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1500px] space-y-6">
-        <header className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-500">
-              Business overview
-            </p>
+    <div className="mx-auto max-w-7xl space-y-6">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm text-slate-500">{todayLabel}</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+            {greetingName ? `Welcome back, ${greetingName}` : "Overview"}
+          </h2>
+        </div>
 
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[#071B31]">
-              Dashboard
-            </h1>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Track performance, receivables, and activity.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href="/clients/new"
-              className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-            >
-              New client
-            </Link>
-
+        {canCreate && (
+          <div className="flex gap-2">
             <Link
               href="/quotations/new"
-              className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
             >
               New quotation
             </Link>
-
             <Link
               href="/invoices/new"
-              className="rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-orange-600"
+              className="rounded-lg bg-[#E85D04] px-4 py-2 text-sm font-medium text-white hover:bg-[#cf5203]"
             >
               New invoice
             </Link>
           </div>
-        </header>
+        )}
+      </header>
 
-        <section className="grid grid-cols-2 gap-3 xl:grid-cols-5">
-          <KpiCard
-            label="Collected"
-            value={formatMoney(paidRevenue)}
-            detail="Paid invoice value"
-            tone="orange"
-          />
+      {/* KPIs */}
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Kpi
+          label="Outstanding"
+          value={money.full(metrics.outstanding)}
+          detail={`${metrics.openInvoiceCount} open invoice${metrics.openInvoiceCount === 1 ? "" : "s"}`}
+          icon={Wallet}
+          accent="navy"
+          href="/invoices"
+        />
+        <Kpi
+          label="Overdue"
+          value={money.full(metrics.overdue)}
+          detail={
+            metrics.overdueCount > 0 ? (
+              <span className="font-medium text-red-600">
+                {metrics.overdueCount} invoice{metrics.overdueCount === 1 ? "" : "s"} · oldest{" "}
+                {metrics.oldestOverdueDays} days
+              </span>
+            ) : (
+              "Nothing overdue"
+            )
+          }
+          icon={AlertTriangle}
+          accent="red"
+          href="/invoices"
+        />
+        <Kpi
+          label="Invoiced this month"
+          value={money.full(metrics.invoicedThisMonth)}
+          detail={`Last month ${money.full(metrics.invoicedLastMonth)} · net of credit notes`}
+          icon={Receipt}
+          accent="emerald"
+        />
+        <Kpi
+          label="Open quotations"
+          value={money.full(metrics.pipelineValue)}
+          detail={`${metrics.pipelineCount} sent or accepted${metrics.winRate !== null ? ` · ${metrics.winRate}% win rate` : ""}`}
+          icon={FileText}
+          accent="orange"
+          href="/quotations"
+        />
+      </section>
 
-          <KpiCard
-            label="Receivables"
-            value={formatMoney(outstandingAmount)}
-            detail={`${openInvoiceCount} open invoice${
-              openInvoiceCount === 1
-                ? ""
-                : "s"
-            }`}
-            tone="blue"
-          />
-
-          <KpiCard
-            label="Overdue"
-            value={formatMoney(overdueAmount)}
-            detail="Needs follow-up"
-            tone="red"
-          />
-
-          <KpiCard
-            label="Quotations"
-            value={String(pendingQuotationCount)}
-            detail="Draft or sent"
-            tone="purple"
-          />
-
-          <KpiCard
-            label="Clients"
-            value={String(clientCount)}
-            detail="Workspace clients"
-            tone="slate"
-          />
-        </section>
-
-        <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <div>
-                <h2 className="text-base font-semibold text-slate-900">
-                  Revenue and activity
-                </h2>
-
-                <p className="mt-1 text-xs text-slate-500">
-                  Paid revenue, invoices, and quotations
-                </p>
-              </div>
-
-              <div className="flex rounded-lg bg-slate-100 p-1">
-                {[
-                  ["daily", "Daily"],
-                  ["monthly", "Monthly"],
-                  ["yearly", "Yearly"],
-                ].map(([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() =>
-                      setPeriod(
-                        value as
-                          | "daily"
-                          | "monthly"
-                          | "yearly",
-                      )
-                    }
-                    className={[
-                      "rounded-md px-3 py-1.5 text-xs font-semibold transition",
-                      period === value
-                        ? "bg-white text-slate-900 shadow-sm"
-                        : "text-slate-500 hover:text-slate-900",
-                    ].join(" ")}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
+      {/* Chart + attention */}
+      <section className="grid gap-4 xl:grid-cols-3">
+        <Card
+          title="Invoiced per month"
+          className="xl:col-span-2"
+          action={
+            <div className="flex items-center gap-4 text-xs text-slate-500">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-sm bg-[#071B31]" /> Invoiced
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-sm bg-[#E85D04]" /> Paid so far
+              </span>
             </div>
-
-            <div className="mt-5 h-[300px] w-full">
-              <ResponsiveContainer
-                width="100%"
-                height="100%"
-              >
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient
-                      id="revenueGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop
-                        offset="5%"
-                        stopColor="#F97316"
-                        stopOpacity={0.25}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor="#F97316"
-                        stopOpacity={0}
-                      />
-                    </linearGradient>
-                  </defs>
-
-                  <CartesianGrid
-                    stroke="#E2E8F0"
-                    strokeDasharray="3 3"
-                    vertical={false}
-                  />
-
+          }
+        >
+          {hasChartData ? (
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={metrics.monthly} barGap={2}>
+                  <CartesianGrid vertical={false} stroke="#EEF2F6" />
                   <XAxis
                     dataKey="label"
-                    axisLine={false}
                     tickLine={false}
-                    tick={{
-                      fill: "#94A3B8",
-                      fontSize: 11,
-                    }}
+                    axisLine={false}
+                    tick={{ fill: "#64748B", fontSize: 12 }}
                   />
-
                   <YAxis
-                    axisLine={false}
                     tickLine={false}
-                    tick={{
-                      fill: "#94A3B8",
-                      fontSize: 11,
-                    }}
-                    tickFormatter={(value) =>
-                      `AED ${value}`
-                    }
+                    axisLine={false}
+                    width={48}
+                    tick={{ fill: "#64748B", fontSize: 12 }}
+                    tickFormatter={(value: number) => money.short(value)}
                   />
-
                   <Tooltip
-                    formatter={(
-                      value,
-                      name,
-                    ) => [
-                      name === "revenue"
-                        ? formatMoney(
-                            Number(value),
-                          )
-                        : value,
-                      name === "revenue"
-                        ? "Revenue"
-                        : name ===
-                            "invoices"
-                          ? "Invoices"
-                          : "Quotations",
+                    cursor={{ fill: "#F1F5F9" }}
+                    formatter={(value, name) => [
+                      money.full(Number(value)),
+                      name === "invoiced" ? "Invoiced" : "Paid so far",
                     ]}
                     contentStyle={{
-                      borderRadius: 10,
-                      border: "1px solid #E2E8F0",
-                      boxShadow:
-                        "0 8px 24px rgba(15,23,42,.08)",
+                      borderRadius: 12,
+                      borderColor: "#E2E8F0",
+                      fontSize: 12,
                     }}
                   />
-
-                  <Area
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke="#F97316"
-                    strokeWidth={2.5}
-                    fill="url(#revenueGradient)"
-                  />
-
-                  <Area
-                    type="monotone"
-                    dataKey="invoices"
-                    stroke="#2563EB"
-                    strokeWidth={2}
-                    fill="transparent"
-                  />
-
-                  <Area
-                    type="monotone"
-                    dataKey="quotations"
-                    stroke="#7C3AED"
-                    strokeWidth={2}
-                    fill="transparent"
-                  />
-                </AreaChart>
+                  <Bar dataKey="invoiced" fill="#071B31" radius={[4, 4, 0, 0]} maxBarSize={28} />
+                  <Bar dataKey="collectedShare" fill="#E85D04" radius={[4, 4, 0, 0]} maxBarSize={28} />
+                </BarChart>
               </ResponsiveContainer>
             </div>
-
-            <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-500">
-              <LegendDot
-                color="#F97316"
-                label="Revenue"
-              />
-              <LegendDot
-                color="#2563EB"
-                label="Invoices"
-              />
-              <LegendDot
-                color="#7C3AED"
-                label="Quotations"
-              />
+          ) : (
+            <div className="flex h-64 items-center justify-center rounded-xl border border-dashed border-slate-200 text-sm text-slate-500">
+              Monthly totals appear once you send your first invoice.
             </div>
-          </div>
+          )}
+        </Card>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-base font-semibold text-slate-900">
-              Invoice status
-            </h2>
-
-            <p className="mt-1 text-xs text-slate-500">
-              Current billing pipeline
-            </p>
-
-            <div className="mt-5 h-[230px]">
-              <ResponsiveContainer
-                width="100%"
-                height="100%"
-              >
-                <PieChart>
-                  <Pie
-                    data={statusData}
-                    dataKey="value"
-                    nameKey="name"
-                    innerRadius={58}
-                    outerRadius={86}
-                    paddingAngle={3}
+        <Card title="Needs attention">
+          {metrics.attention.length === 0 ? (
+            <div className="flex h-64 flex-col items-center justify-center text-center">
+              <p className="text-sm font-medium text-slate-900">All clear</p>
+              <p className="mt-1 text-sm text-slate-500">
+                No overdue invoices, expiring quotations or forgotten drafts.
+              </p>
+            </div>
+          ) : (
+            <ul className="space-y-1">
+              {metrics.attention.map((item) => (
+                <li key={item.href + item.kind}>
+                  <Link
+                    href={item.href}
+                    className="-mx-2 flex items-start gap-3 rounded-lg px-2 py-2.5 hover:bg-slate-50"
                   >
-                    {statusData.map(
-                      (entry, index) => (
-                        <Cell
-                          key={`${entry.name}-${index}`}
-                          fill={
-                            [
-                              "#22C55E",
-                              "#F97316",
-                              "#2563EB",
-                              "#EF4444",
-                              "#94A3B8",
-                              "#EAB308",
-                            ][
-                              index % 6
-                            ]
-                          }
-                        />
-                      ),
-                    )}
-                  </Pie>
-
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="space-y-2">
-              {statusData.map((item) => (
-                <div
-                  key={item.name}
-                  className="flex items-center justify-between text-sm"
-                >
-                  <span className="capitalize text-slate-500">
-                    {item.name.replace(
-                      "_",
-                      " ",
-                    )}
-                  </span>
-
-                  <span className="font-semibold text-slate-900">
-                    {item.value}
-                  </span>
-                </div>
+                    <span className="mt-0.5">{attentionIcon[item.kind]}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-slate-900">{item.title}</p>
+                      <p className="truncate text-xs text-slate-500">{item.subtitle}</p>
+                    </div>
+                    <span className="shrink-0 text-sm tabular-nums text-slate-700">
+                      {money.compact(item.amount)}
+                    </span>
+                  </Link>
+                </li>
               ))}
-            </div>
-          </div>
-        </section>
+            </ul>
+          )}
+        </Card>
+      </section>
 
-        <section className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,.8fr)]">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-semibold text-slate-900">
-                  Recent invoices
-                </h2>
-
-                <p className="mt-1 text-xs text-slate-500">
-                  Latest billing activity
-                </p>
+      {/* Aging, VAT, clients */}
+      <section className="grid gap-4 lg:grid-cols-3">
+        <Card title="Receivables by age">
+          {agingTotal > 0 ? (
+            <>
+              <div className="flex h-3 overflow-hidden rounded-full bg-slate-100">
+                {metrics.aging.map((bucket) =>
+                  bucket.amount > 0 ? (
+                    <div
+                      key={bucket.label}
+                      className={bucket.tone}
+                      style={{ width: `${(bucket.amount / agingTotal) * 100}%` }}
+                      title={`${bucket.label}: ${money.full(bucket.amount)}`}
+                    />
+                  ) : null,
+                )}
               </div>
-
-              <Link
-                href="/invoices"
-                className="text-xs font-semibold text-orange-600 hover:text-orange-700"
-              >
-                View all
-              </Link>
-            </div>
-
-            <div className="mt-5 overflow-x-auto">
-              <table className="w-full min-w-[600px] text-left text-sm">
-                <thead className="border-b border-slate-200 text-[11px] uppercase tracking-wide text-slate-400">
-                  <tr>
-                    <th className="pb-3 pr-4">
-                      Invoice
-                    </th>
-                    <th className="pb-3 pr-4">
-                      Client
-                    </th>
-                    <th className="pb-3 pr-4">
-                      Due
-                    </th>
-                    <th className="pb-3 pr-4">
-                      Total
-                    </th>
-                    <th className="pb-3">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {invoices
-                    .slice(0, 6)
-                    .map((invoice) => (
-                      <tr
-                        key={invoice.id}
-                        className="border-b border-slate-100 last:border-0"
-                      >
-                        <td className="py-3 pr-4 font-semibold text-slate-900">
-                          {invoice.invoice_number}
-                        </td>
-
-                        <td className="py-3 pr-4 text-slate-600">
-                          {invoice.clients
-                            ?.company_name ??
-                            invoice.clients
-                              ?.name ??
-                            "Unknown"}
-                        </td>
-
-                        <td className="py-3 pr-4 text-slate-500">
-                          {formatDate(
-                            invoice.due_date,
-                          )}
-                        </td>
-
-                        <td className="py-3 pr-4 font-semibold text-slate-900">
-                          {formatMoney(
-                            Number(
-                              invoice.total,
-                            ),
-                            invoice.currency,
-                          )}
-                        </td>
-
-                        <td className="py-3">
-                          <StatusBadge
-                            status={
-                              invoice.status
-                            }
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-
-              {invoices.length === 0 ? (
-                <EmptyState text="No invoices yet." />
-              ) : null}
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-semibold text-slate-900">
-                  Recent quotations
-                </h2>
-
-                <p className="mt-1 text-xs text-slate-500">
-                  Latest proposals
-                </p>
-              </div>
-
-              <Link
-                href="/quotations"
-                className="text-xs font-semibold text-orange-600 hover:text-orange-700"
-              >
-                View all
-              </Link>
-            </div>
-
-            <div className="mt-5 space-y-2.5">
-              {quotations
-                .slice(0, 6)
-                .map((quotation) => (
-                  <div
-                    key={quotation.id}
-                    className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-3.5 py-3"
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-slate-900">
-                        {quotation.quotation_number}
-                      </p>
-
-                      <p className="mt-1 truncate text-xs text-slate-500">
-                        {quotation.clients
-                          ?.company_name ??
-                          quotation.clients
-                            ?.name ??
-                          "Unknown"}
-                      </p>
-                    </div>
-
-                    <div className="shrink-0 text-right">
-                      <p className="text-sm font-semibold text-slate-900">
-                        {formatMoney(
-                          Number(
-                            quotation.total,
-                          ),
-                          quotation.currency,
-                        )}
-                      </p>
-
-                      <StatusBadge
-                        status={
-                          quotation.status
-                        }
-                      />
-                    </div>
+              <dl className="mt-4 space-y-2.5">
+                {metrics.aging.map((bucket) => (
+                  <div key={bucket.label} className="flex items-center justify-between text-sm">
+                    <dt className="flex items-center gap-2 text-slate-600">
+                      <span className={`h-2.5 w-2.5 rounded-full ${bucket.tone}`} />
+                      {bucket.label}
+                      {bucket.count > 0 && (
+                        <span className="text-xs text-slate-400">({bucket.count})</span>
+                      )}
+                    </dt>
+                    <dd className="tabular-nums font-medium text-slate-900">
+                      {money.full(bucket.amount)}
+                    </dd>
                   </div>
                 ))}
+              </dl>
+            </>
+          ) : (
+            <p className="py-8 text-center text-sm text-slate-500">
+              No money owed to you right now.
+            </p>
+          )}
+        </Card>
 
-              {quotations.length === 0 ? (
-                <EmptyState text="No quotations yet." />
-              ) : null}
+        <Card
+          title="VAT this quarter"
+          action={<span className="text-xs text-slate-500">{metrics.vat.label}</span>}
+        >
+          <dl className="space-y-2.5 text-sm">
+            <div className="flex justify-between">
+              <dt className="text-slate-600">Taxable sales</dt>
+              <dd className="tabular-nums text-slate-900">{money.full(metrics.vat.taxableSales)}</dd>
             </div>
-          </div>
-        </section>
-
-        <section className="grid gap-5 lg:grid-cols-2">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-semibold text-slate-900">
-                  Recent documents
-                </h2>
-
-                <p className="mt-1 text-xs text-slate-500">
-                  Latest workspace files
-                </p>
-              </div>
-
-              <Link
-                href="/documents"
-                className="text-xs font-semibold text-orange-600 hover:text-orange-700"
-              >
-                View all
-              </Link>
+            <div className="flex justify-between">
+              <dt className="text-slate-600">Output VAT on invoices</dt>
+              <dd className="tabular-nums text-slate-900">{money.full(metrics.vat.outputVat)}</dd>
             </div>
+            <div className="flex justify-between">
+              <dt className="text-slate-600">Less credit notes</dt>
+              <dd className="tabular-nums text-slate-900">- {money.full(metrics.vat.creditVat)}</dd>
+            </div>
+            <div className="flex justify-between border-t border-slate-100 pt-2.5 font-semibold">
+              <dt className="text-slate-900">Net output VAT</dt>
+              <dd className="tabular-nums text-[#E85D04]">{money.full(metrics.vat.netVat)}</dd>
+            </div>
+          </dl>
+          <p className="mt-4 text-xs leading-5 text-slate-400">
+            Calendar quarter, by invoice date. Check it against your FTA tax
+            period; input VAT on purchases isn&apos;t tracked here.
+          </p>
+        </Card>
 
-            <div className="mt-5 space-y-2">
-              {documents.map((document) => (
-                <div
-                  key={document.id}
-                  className="flex items-center justify-between gap-3 border-b border-slate-100 py-3 last:border-0"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-slate-900">
-                      {document.title}
+        <Card
+          title="Top clients by balance"
+          action={
+            <span className="text-xs text-slate-500">
+              {metrics.clientCount} client{metrics.clientCount === 1 ? "" : "s"}
+            </span>
+          }
+        >
+          {metrics.topClients.length === 0 ? (
+            <p className="py-8 text-center text-sm text-slate-500">
+              Client balances appear once invoices are sent.
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {metrics.topClients.map((client) => {
+                const share =
+                  client.invoiced > 0 ? Math.min(client.outstanding / client.invoiced, 1) : 0;
+                return (
+                  <li key={client.name}>
+                    <div className="flex items-baseline justify-between gap-3 text-sm">
+                      <span className="truncate font-medium text-slate-900">{client.name}</span>
+                      <span className="shrink-0 tabular-nums text-slate-900">
+                        {money.full(client.outstanding)}
+                      </span>
+                    </div>
+                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                      <div
+                        className="h-full rounded-full bg-[#071B31]"
+                        style={{ width: `${share * 100}%` }}
+                      />
+                    </div>
+                    <p className="mt-1 text-xs text-slate-400">
+                      of {money.full(client.invoiced)} invoiced
                     </p>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </Card>
+      </section>
 
-                    <p className="mt-1 truncate text-xs text-slate-500">
-                      {document.file_name}
-                    </p>
-                  </div>
+      {/* Recent */}
+      <section className="grid gap-4 lg:grid-cols-2">
+        <Card
+          title="Recent invoices"
+          action={
+            <Link href="/invoices" className="text-xs font-medium text-[#E85D04] hover:underline">
+              View all
+            </Link>
+          }
+        >
+          <RecentTable
+            rows={metrics.recentInvoices}
+            emptyText="No invoices yet."
+            emptyHref="/quotations"
+            emptyCta="Convert an accepted quotation"
+            format={money.full}
+          />
+        </Card>
 
-                  <span className="shrink-0 rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-semibold text-orange-600">
-                    {document.category}
-                  </span>
-                </div>
-              ))}
+        <Card
+          title="Recent quotations"
+          action={
+            <Link href="/quotations" className="text-xs font-medium text-[#E85D04] hover:underline">
+              View all
+            </Link>
+          }
+        >
+          <RecentTable
+            rows={metrics.recentQuotations}
+            emptyText="No quotations yet."
+            emptyHref="/quotations/new"
+            emptyCta="Create your first quotation"
+            quotation
+            format={money.full}
+          />
+        </Card>
+      </section>
 
-              {documents.length === 0 ? (
-                <EmptyState text="No documents yet." />
-              ) : null}
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-base font-semibold text-slate-900">
-              Quick actions
-            </h2>
-
-            <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
-              <QuickAction
-                href="/clients/new"
-                title="Add client"
-                detail="Create a client record"
-              />
-
-              <QuickAction
-                href="/quotations/new"
-                title="New quotation"
-                detail="Prepare a proposal"
-              />
-
-              <QuickAction
-                href="/invoices/new"
-                title="New invoice"
-                detail="Issue an invoice"
-              />
-
-              <QuickAction
-                href="/documents"
-                title="Upload document"
-                detail="Store a business file"
-              />
-            </div>
-          </div>
-        </section>
-      </div>
-    </main>
-  );
-}
-
-function KpiCard({
-  label,
-  value,
-  detail,
-  tone,
-}: {
-  label: string;
-  value: string;
-  detail: string;
-  tone: "orange" | "blue" | "red" | "purple" | "slate";
-}) {
-  const tones = {
-    orange: "border-orange-100 bg-orange-50/60 text-orange-600",
-    blue: "border-blue-100 bg-blue-50/60 text-blue-600",
-    red: "border-red-100 bg-red-50/60 text-red-600",
-    purple: "border-purple-100 bg-purple-50/60 text-purple-600",
-    slate: "border-slate-200 bg-slate-50 text-slate-600",
-  };
-
-  return (
-    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div
-        className={`inline-flex rounded-md border px-2 py-1 text-[10px] font-bold uppercase tracking-wider ${tones[tone]}`}
-      >
-        {label}
-      </div>
-
-      <p className="mt-4 truncate text-xl font-semibold tracking-tight text-slate-950 sm:text-2xl">
-        {value}
-      </p>
-
-      <p className="mt-1 truncate text-xs text-slate-500">
-        {detail}
-      </p>
+      {metrics.otherCurrencyCount > 0 && (
+        <p className="text-xs text-slate-400">
+          Totals are in {metrics.currency}. {metrics.otherCurrencyCount} document
+          {metrics.otherCurrencyCount === 1 ? "" : "s"} in other currencies are
+          not included.
+        </p>
+      )}
     </div>
-  );
-}
-
-function StatusBadge({
-  status,
-}: {
-  status: string;
-}) {
-  const normalized =
-    status.toLowerCase();
-
-  const classes =
-    normalized === "paid" ||
-    normalized === "accepted"
-      ? "bg-green-50 text-green-700"
-      : normalized === "overdue"
-        ? "bg-red-50 text-red-700"
-        : normalized === "cancelled"
-          ? "bg-slate-100 text-slate-500"
-          : "bg-amber-50 text-amber-700";
-
-  return (
-    <span
-      className={`inline-flex rounded-full px-2 py-1 text-[11px] font-semibold capitalize ${classes}`}
-    >
-      {status.replace("_", " ")}
-    </span>
-  );
-}
-
-function LegendDot({
-  color,
-  label,
-}: {
-  color: string;
-  label: string;
-}) {
-  return (
-    <span className="inline-flex items-center gap-2">
-      <span
-        className="h-2 w-2 rounded-full"
-        style={{ backgroundColor: color }}
-      />
-      {label}
-    </span>
-  );
-}
-
-function QuickAction({
-  href,
-  title,
-  detail,
-}: {
-  href: string;
-  title: string;
-  detail: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="rounded-xl border border-slate-200 p-3 transition hover:border-orange-200 hover:bg-orange-50"
-    >
-      <p className="text-sm font-semibold text-slate-900">
-        {title}
-      </p>
-
-      <p className="mt-1 text-xs text-slate-500">
-        {detail}
-      </p>
-    </Link>
-  );
-}
-
-function EmptyState({
-  text,
-}: {
-  text: string;
-}) {
-  return (
-    <p className="rounded-xl bg-slate-50 p-4 text-center text-sm text-slate-500">
-      {text}
-    </p>
   );
 }

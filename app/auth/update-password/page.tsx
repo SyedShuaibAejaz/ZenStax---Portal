@@ -1,11 +1,6 @@
-import { UpdatePasswordForm } from "@/components/update-password-form";
+import { redirect } from "next/navigation";
 
+// Legacy starter-kit route; the portal uses /set-password.
 export default function Page() {
-  return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <UpdatePasswordForm />
-      </div>
-    </div>
-  );
+  redirect("/set-password");
 }

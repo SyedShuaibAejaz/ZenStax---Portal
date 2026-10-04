@@ -2,6 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { InvoiceStatusActions } from "@/components/invoice/invoice-status-actions";
 import { SaveInvoicePdfButton } from "@/components/invoice/save-invoice-button";
+import {
+  effectiveInvoiceStatus,
+  formatStatus,
+  invoiceStatusClasses,
+} from "@/lib/invoice-status";
 import { createClient } from "@/lib/supabase/server";
 import { CancelInvoiceButton } from "@/components/invoice/cancel-invoice-button";
 import { DeleteInvoiceButton } from "@/components/invoice/delete-invoice-button";
@@ -245,8 +250,12 @@ export default async function InvoiceDetailsPage({
           </div>
 
           <div className="md:text-right">
-            <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-sm font-medium capitalize text-blue-700">
-              {invoice.status.replace("_", " ")}
+            <span
+              className={`inline-flex rounded-full px-3 py-1 text-sm font-medium capitalize ring-1 ring-inset ${invoiceStatusClasses(
+                effectiveInvoiceStatus(invoice),
+              )}`}
+            >
+              {formatStatus(effectiveInvoiceStatus(invoice))}
             </span>
 
             <dl className="mt-4 space-y-2 text-sm">
