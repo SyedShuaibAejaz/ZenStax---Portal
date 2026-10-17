@@ -58,7 +58,7 @@ export default async function DocumentsPage() {
     !membership?.workspace_id
   ) {
     return (
-      <main className="min-h-screen bg-[#F6F8FB] p-6">
+      <main className="rounded-xl p-4 sm:p-6">
         <div className="mx-auto max-w-6xl rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">
           Your account is not assigned to
           a workspace.
@@ -142,18 +142,18 @@ export default async function DocumentsPage() {
     role === "admin";
 
   return (
-    <main className="min-h-screen bg-[#F6F8FB] px-4 py-8 sm:px-6 lg:px-8">
+    <main className="min-w-0">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#FF7425]">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-zen-orange">
             Workspace files
           </p>
 
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[#071B31]">
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
             Documents
           </h1>
 
-          <p className="mt-2 text-sm leading-6 text-slate-500">
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
             Store and manage invoices,
             receipts, contracts, and other
             business files.

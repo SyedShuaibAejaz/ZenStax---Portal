@@ -1,9 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import {
   ChangeEvent,
   FormEvent,
-  MouseEvent,
   useEffect,
   useMemo,
   useRef,
@@ -200,15 +200,15 @@ export default function DocumentsPageClient({
   return (
     <>
       <section className="space-y-6">
-        <div className="flex flex-col justify-between gap-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm lg:flex-row lg:items-center">
+        <div className="flex flex-col justify-between gap-5 rounded-3xl border border-border bg-card p-6 shadow-sm lg:flex-row lg:items-center">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-orange-500">
               {role}
             </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
               Workspace documents
             </h2>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-muted-foreground">
               Organize and find your business files quickly.
             </p>
           </div>
@@ -225,9 +225,9 @@ export default function DocumentsPageClient({
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
-          <aside className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+          <aside className="rounded-3xl border border-border bg-card p-4 shadow-sm">
             <div className="mb-3 px-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Folders
               </p>
             </div>
@@ -245,14 +245,14 @@ export default function DocumentsPageClient({
                       "flex w-full items-center justify-between rounded-xl px-3 py-3 text-left transition",
                       isActive
                         ? "bg-orange-50 text-orange-700"
-                        : "text-slate-600 hover:bg-slate-50",
+                        : "text-muted-foreground hover:bg-muted/45",
                     ].join(" ")}
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-semibold">
                         {folder.name}
                       </span>
-                      <span className="mt-0.5 block truncate text-xs text-slate-400">
+                      <span className="mt-0.5 block truncate text-xs text-muted-foreground">
                         {folder.description}
                       </span>
                     </span>
@@ -261,7 +261,7 @@ export default function DocumentsPageClient({
                         "ml-3 rounded-full px-2 py-1 text-xs font-semibold",
                         isActive
                           ? "bg-orange-100 text-orange-700"
-                          : "bg-slate-100 text-slate-500",
+                          : "bg-muted text-muted-foreground",
                       ].join(" ")}
                     >
                       {folderCounts[folder.value] ?? 0}
@@ -273,16 +273,16 @@ export default function DocumentsPageClient({
           </aside>
 
           <div className="min-w-0 space-y-5">
-            <div className="flex flex-col gap-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row">
+            <div className="flex flex-col gap-3 rounded-3xl border border-border bg-card p-4 shadow-sm sm:flex-row">
               <div className="relative min-w-0 flex-1">
                 <input
                   type="search"
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
                   placeholder="Search documents..."
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pl-11 text-sm outline-none transition focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-100"
+                  className="w-full rounded-xl border border-border bg-muted/45 px-4 py-3 pl-11 text-sm outline-none transition focus:border-orange-500 focus:bg-card focus:ring-4 focus:ring-orange-100"
                 />
-                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                   ⌕
                 </span>
               </div>
@@ -290,7 +290,7 @@ export default function DocumentsPageClient({
               <select
                 value={sortBy}
                 onChange={(event) => setSortBy(event.target.value)}
-                className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
+                className="rounded-xl border border-border bg-muted/45 px-4 py-3 text-sm text-foreground outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
               >
                 <option value="newest">Newest first</option>
                 <option value="oldest">Oldest first</option>
@@ -300,12 +300,12 @@ export default function DocumentsPageClient({
 
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-slate-900">
+                <h3 className="font-semibold text-foreground">
                   {activeFolder === "All"
                     ? "All documents"
                     : `${activeFolder} documents`}
                 </h3>
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   {filteredDocuments.length} result
                   {filteredDocuments.length === 1 ? "" : "s"}
                 </p>
@@ -323,14 +323,14 @@ export default function DocumentsPageClient({
             </div>
 
             {filteredDocuments.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center">
+              <div className="rounded-3xl border border-dashed border-border bg-card p-12 text-center">
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-50 text-2xl">
                   📁
                 </div>
-                <h3 className="mt-4 font-semibold text-slate-900">
+                <h3 className="mt-4 font-semibold text-foreground">
                   No documents found
                 </h3>
-                <p className="mt-2 text-sm text-slate-500">
+                <p className="mt-2 text-sm text-muted-foreground">
                   Try another search or upload a new document.
                 </p>
               </div>
@@ -473,10 +473,10 @@ function DocumentCard({
 
   return (
     <>
-      <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+      <article className="rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h4 className="truncate font-semibold text-slate-900">
+            <h4 className="truncate font-semibold text-foreground">
               {document.title}
             </h4>
             <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-orange-500">
@@ -484,18 +484,18 @@ function DocumentCard({
             </p>
           </div>
 
-          <span className="shrink-0 rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500">
+          <span className="shrink-0 rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
             {document.mime_type.split("/").at(-1)?.toUpperCase() ?? "FILE"}
           </span>
         </div>
 
         {document.description ? (
-          <p className="mt-4 line-clamp-3 text-sm text-slate-500">
+          <p className="mt-4 line-clamp-3 text-sm text-muted-foreground">
             {document.description}
           </p>
         ) : null}
 
-        <p className="mt-4 truncate text-xs text-slate-400">
+        <p className="mt-4 truncate text-xs text-muted-foreground">
           {document.file_name}
         </p>
 
@@ -504,7 +504,7 @@ function DocumentCard({
             type="button"
             onClick={handlePreview}
             disabled={isLoading}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+            className="rounded-lg border border-border px-3 py-2 text-sm font-semibold text-foreground transition hover:bg-muted/45 disabled:opacity-50"
           >
             {isLoading ? "Loading..." : "Preview"}
           </button>
@@ -512,7 +512,7 @@ function DocumentCard({
           <button
             type="button"
             onClick={handleDownload}
-            className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
+            className="rounded-lg bg-neutral-950 px-3 py-2 text-sm font-semibold text-white transition hover:bg-neutral-800"
           >
             Download
           </button>
@@ -584,7 +584,7 @@ function DocumentPreviewModal({
 
   return (
     <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-neutral-950/70 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="document-preview-title"
@@ -595,18 +595,18 @@ function DocumentPreviewModal({
       }}
     >
       <div
-        className="flex h-[calc(100dvh-2rem)] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        className="flex h-[calc(100dvh-2rem)] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-card shadow-2xl"
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <header className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-200 px-5 py-4">
+        <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border px-5 py-4">
           <div className="min-w-0">
             <h2
               id="document-preview-title"
-              className="truncate text-lg font-semibold text-slate-900"
+              className="truncate text-lg font-semibold text-foreground"
             >
               {title}
             </h2>
-            <p className="truncate text-sm text-slate-500">
+            <p className="truncate text-sm text-muted-foreground">
               {fileName}
             </p>
           </div>
@@ -622,7 +622,7 @@ function DocumentPreviewModal({
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-2xl text-slate-400 hover:bg-slate-100 hover:text-slate-900"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-2xl text-muted-foreground hover:bg-muted hover:text-foreground"
               aria-label="Close preview"
             >
               ×
@@ -630,15 +630,15 @@ function DocumentPreviewModal({
           </div>
         </header>
 
-        <main className="min-h-0 flex-1 bg-slate-100 p-3 sm:p-6">
+        <main className="min-h-0 flex-1 bg-muted p-3 sm:p-6">
           {isPdf ? (
             <iframe
               src={url}
               title={`Preview of ${fileName}`}
-              className="h-full min-h-0 w-full rounded-xl border border-slate-200 bg-white"
+              className="h-full min-h-0 w-full rounded-xl border border-border bg-card"
             />
           ) : isImage ? (
-            <div className="flex h-full items-center justify-center overflow-auto rounded-xl bg-slate-900 p-4">
+            <div className="flex h-full items-center justify-center overflow-auto rounded-xl bg-neutral-950 p-4">
               <img
                 src={url}
                 alt={title}
@@ -646,14 +646,14 @@ function DocumentPreviewModal({
               />
             </div>
           ) : (
-            <div className="flex h-full flex-col items-center justify-center rounded-xl bg-white p-8 text-center">
-              <p className="text-lg font-semibold text-slate-900">
+            <div className="flex h-full flex-col items-center justify-center rounded-xl bg-card p-8 text-center">
+              <p className="text-lg font-semibold text-foreground">
                 Preview is not available
               </p>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-muted-foreground">
                 This file type cannot be previewed in the browser.
               </p>
-              <p className="mt-1 text-xs text-slate-400">{mimeType}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{mimeType}</p>
               <button
                 type="button"
                 onClick={onDownload}
@@ -784,7 +784,7 @@ function UploadDocumentModal({
 
   return (
     <div
-      className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/60 p-4 backdrop-blur-sm sm:p-6"
+      className="fixed inset-0 z-[9999] overflow-y-auto bg-neutral-950/60 p-4 backdrop-blur-sm sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="upload-document-title"
@@ -796,17 +796,17 @@ function UploadDocumentModal({
     >
       <div className="flex min-h-full items-start justify-center sm:items-center">
         <div
-          className="my-4 flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl sm:my-0"
+          className="my-4 flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl bg-card shadow-2xl sm:my-0"
           onMouseDown={(event) => event.stopPropagation()}
         >
-          <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-5 py-4 sm:px-7">
+          <div className="flex shrink-0 items-center justify-between border-b border-border px-5 py-4 sm:px-7">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-orange-500">
                 Workspace files
               </p>
               <h2
                 id="upload-document-title"
-                className="mt-1 text-2xl font-semibold text-slate-950"
+                className="mt-1 text-2xl font-semibold text-foreground"
               >
                 Upload document
               </h2>
@@ -817,7 +817,7 @@ function UploadDocumentModal({
               onClick={onClose}
               disabled={isUploading}
               aria-label="Close upload dialog"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full text-2xl text-slate-400 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full text-2xl text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50"
             >
               ×
             </button>
@@ -841,7 +841,7 @@ function UploadDocumentModal({
                 <div>
                   <label
                     htmlFor="document-title"
-                    className="mb-2 block text-sm font-semibold text-slate-900"
+                    className="mb-2 block text-sm font-semibold text-foreground"
                   >
                     Document title
                   </label>
@@ -852,14 +852,14 @@ function UploadDocumentModal({
                     onChange={(event) => setTitle(event.target.value)}
                     placeholder="Invoice from supplier"
                     disabled={isUploading}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 outline-none focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-100 disabled:opacity-60"
+                    className="w-full rounded-2xl border border-border bg-muted/45 px-5 py-4 outline-none focus:border-orange-500 focus:bg-card focus:ring-4 focus:ring-orange-100 disabled:opacity-60"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="document-category"
-                    className="mb-2 block text-sm font-semibold text-slate-900"
+                    className="mb-2 block text-sm font-semibold text-foreground"
                   >
                     Folder
                   </label>
@@ -868,7 +868,7 @@ function UploadDocumentModal({
                     value={category}
                     onChange={(event) => setCategory(event.target.value)}
                     disabled={isUploading}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 outline-none focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-100 disabled:opacity-60"
+                    className="w-full rounded-2xl border border-border bg-muted/45 px-5 py-4 outline-none focus:border-orange-500 focus:bg-card focus:ring-4 focus:ring-orange-100 disabled:opacity-60"
                   >
                     {CATEGORIES.map((item) => (
                       <option key={item} value={item}>
@@ -881,7 +881,7 @@ function UploadDocumentModal({
                 <div>
                   <label
                     htmlFor="document-description"
-                    className="mb-2 block text-sm font-semibold text-slate-900"
+                    className="mb-2 block text-sm font-semibold text-foreground"
                   >
                     Description
                   </label>
@@ -892,14 +892,14 @@ function UploadDocumentModal({
                     placeholder="Optional description"
                     rows={4}
                     disabled={isUploading}
-                    className="w-full resize-y rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 outline-none focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-100 disabled:opacity-60"
+                    className="w-full resize-y rounded-2xl border border-border bg-muted/45 px-5 py-4 outline-none focus:border-orange-500 focus:bg-card focus:ring-4 focus:ring-orange-100 disabled:opacity-60"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="document-file"
-                    className="mb-2 block text-sm font-semibold text-slate-900"
+                    className="mb-2 block text-sm font-semibold text-foreground"
                   >
                     File
                   </label>
@@ -909,13 +909,13 @@ function UploadDocumentModal({
                     accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.xls,.xlsx"
                     onChange={handleFileChange}
                     disabled={isUploading}
-                    className="block w-full rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 text-sm disabled:opacity-60"
+                    className="block w-full rounded-2xl border border-dashed border-border bg-muted/45 px-4 py-4 text-sm disabled:opacity-60"
                   />
-                  <p className="mt-2 text-xs text-slate-500">
+                  <p className="mt-2 text-xs text-muted-foreground">
                     Maximum file size: 10 MB.
                   </p>
                   {file ? (
-                    <p className="mt-3 truncate rounded-xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
+                    <p className="mt-3 truncate rounded-xl bg-muted px-4 py-3 text-sm text-foreground">
                       {file.name}
                     </p>
                   ) : null}
@@ -923,12 +923,12 @@ function UploadDocumentModal({
               </div>
             </div>
 
-            <div className="flex shrink-0 flex-col-reverse gap-3 border-t border-slate-200 bg-white px-5 py-4 sm:flex-row sm:justify-end sm:px-7">
+            <div className="flex shrink-0 flex-col-reverse gap-3 border-t border-border bg-card px-5 py-4 sm:flex-row sm:justify-end sm:px-7">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={isUploading}
-                className="w-full rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 sm:w-auto"
+                className="w-full rounded-xl border border-border px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted/45 disabled:opacity-50 sm:w-auto"
               >
                 Cancel
               </button>

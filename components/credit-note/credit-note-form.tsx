@@ -152,7 +152,7 @@ export function CreditNoteForm({
   }
 
   return (
-    <div className="space-y-6 rounded-2xl border border-border bg-white p-6 shadow-sm lg:p-8">
+    <div className="space-y-6 rounded-2xl border border-border bg-card p-6 shadow-sm lg:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h3 className="font-semibold">Lines to credit</h3>
         <Button type="button" variant="outline" onClick={creditEverything}>
@@ -160,9 +160,9 @@ export function CreditNoteForm({
         </Button>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-border">
+      <div className="responsive-table overflow-x-auto rounded-xl border border-border">
         <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="border-b border-border bg-slate-50">
+          <thead className="border-b border-border bg-muted/45">
             <tr>
               <th className="px-4 py-3">Description</th>
               <th className="px-4 py-3 text-right">Unit price</th>
@@ -173,7 +173,7 @@ export function CreditNoteForm({
           </thead>
           <tbody>
             {lines.map((line) => (
-              <tr key={line.id} className="border-b border-slate-100 last:border-0">
+              <tr key={line.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3">{line.description}</td>
                 <td className="px-4 py-3 text-right">
                   {currency} {line.unitPrice.toFixed(2)}
@@ -218,7 +218,7 @@ export function CreditNoteForm({
           </p>
         </div>
 
-        <dl className="space-y-2 rounded-xl bg-slate-50 p-4 text-sm">
+        <dl className="space-y-2 rounded-xl bg-muted/45 p-4 text-sm">
           <div className="flex justify-between">
             <dt className="text-muted-foreground">Subtotal</dt>
             <dd>{currency} {totals.subtotal.toFixed(2)}</dd>

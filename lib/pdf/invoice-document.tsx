@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import fs from "node:fs";
 import path from "node:path";
 
@@ -125,6 +126,22 @@ function loadLogo(): LogoSource | null {
 
 const logo = loadLogo();
 const hasLogo = logo !== null;
+
+function loadPdfImage(relativePath: string): LogoSource | null {
+  const filePath = path.join(PUBLIC_DIR, relativePath);
+  try {
+    const data = fs.readFileSync(filePath);
+    const header = data.subarray(0, 4).toString("hex");
+    if (header === "89504e47") return { data, format: "png" };
+    if (header.startsWith("ffd8")) return { data, format: "jpg" };
+  } catch (error) {
+    console.warn(`Could not load PDF image ${relativePath}:`, error);
+  }
+  return null;
+}
+
+const companyStamp = loadPdfImage("branding/company-stamp.png");
+const authorizedSignatory = loadPdfImage("branding/authorized-signatory.png");
 
 const hasHeadingFont =
   fs.existsSync(FONT_SEMIBOLD) && fs.existsSync(FONT_BOLD);
@@ -527,6 +544,52 @@ const styles = StyleSheet.create({
     fontSize: 9,
     lineHeight: 1.45,
     color: colors.muted,
+  },
+
+  approvalSection: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 22,
+  },
+  approvalBlock: {
+    width: 210,
+    minHeight: 116,
+    alignItems: "center",
+  },
+  approvalArtwork: {
+    position: "relative",
+    width: 150,
+    height: 82,
+  },
+  stampImage: {
+    position: "absolute",
+    top: 0,
+    left: 35,
+    width: 78,
+    height: 79,
+    objectFit: "contain",
+  },
+  signatureImage: {
+    position: "absolute",
+    top: 17,
+    left: 3,
+    width: 145,
+    height: 58,
+    objectFit: "contain",
+  },
+  approvalLine: {
+    width: 175,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  approvalLabel: {
+    marginTop: 6,
+    fontFamily: headingFont,
+    ...headingSemi,
+    fontSize: 8,
+    color: colors.navy,
+    textTransform: "uppercase",
+    letterSpacing: 0.7,
   },
 
   /* Footer */
@@ -1144,6 +1207,19 @@ export function InvoiceDocument({
             <Text style={styles.notesText}>
               {business.terms_and_conditions}
             </Text>
+          </View>
+        )}
+
+        {!isCreditNote && (companyStamp || authorizedSignatory) && (
+          <View style={styles.approvalSection} wrap={false}>
+            <View style={styles.approvalBlock}>
+              <View style={styles.approvalArtwork}>
+                {companyStamp && <Image src={companyStamp} style={styles.stampImage} />}
+                {authorizedSignatory && <Image src={authorizedSignatory} style={styles.signatureImage} />}
+              </View>
+              <View style={styles.approvalLine} />
+              <Text style={styles.approvalLabel}>Authorized signatory</Text>
+            </View>
           </View>
         )}
 

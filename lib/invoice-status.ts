@@ -53,17 +53,17 @@ export function effectiveInvoiceStatus(
 export function invoiceStatusClasses(status: string) {
   switch (status) {
     case "paid":
-      return "bg-emerald-50 text-emerald-700 ring-emerald-600/20";
+      return "bg-emerald-500/15 text-emerald-700 ring-emerald-600/20 dark:text-emerald-300";
     case "partially_paid":
-      return "bg-amber-50 text-amber-700 ring-amber-600/20";
+      return "bg-amber-500/15 text-amber-700 ring-amber-600/20 dark:text-amber-300";
     case "overdue":
-      return "bg-red-50 text-red-700 ring-red-600/20";
+      return "bg-red-500/15 text-red-700 ring-red-600/20 dark:text-red-300";
     case "cancelled":
-      return "bg-slate-100 text-slate-500 ring-slate-500/20";
+      return "bg-muted text-muted-foreground ring-border";
     case "draft":
-      return "bg-slate-50 text-slate-600 ring-slate-500/20";
+      return "bg-muted/70 text-muted-foreground ring-border";
     default:
-      return "bg-blue-50 text-blue-700 ring-blue-600/20";
+      return "bg-blue-500/15 text-blue-700 ring-blue-600/20 dark:text-blue-300";
   }
 }
 

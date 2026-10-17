@@ -41,7 +41,7 @@ export default async function EditClientPage({
       <div className="mb-6">
         <Link
           href={`/clients/${id}`}
-          className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#E85E17]"
+          className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-[#E85E17]"
         >
           <span aria-hidden="true">
             ←

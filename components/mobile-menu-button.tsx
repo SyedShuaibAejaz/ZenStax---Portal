@@ -2,20 +2,16 @@
 
 import { Menu } from "lucide-react";
 
-import { usePortalShell } from "@/components/portal-shell";
-
 export function MobileMenuButton() {
-  const { setMobileOpen } = usePortalShell();
-
   return (
     <button
       type="button"
-      aria-label="Open navigation"
-      title="Open navigation"
-      className="rounded-lg p-2 text-slate-700 transition hover:bg-slate-100 lg:hidden"
-      onClick={() => setMobileOpen(true)}
+      onClick={() => window.dispatchEvent(new Event("portal-menu-open"))}
+      className="inline-flex size-11 items-center justify-center rounded-xl text-foreground transition hover:bg-accent active:scale-95 lg:hidden"
+      aria-label="Open navigation menu"
+      aria-controls="portal-navigation"
     >
-      <Menu size={22} strokeWidth={2} />
+      <Menu className="size-6" aria-hidden="true" />
     </button>
   );
 }

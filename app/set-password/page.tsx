@@ -10,10 +10,6 @@ import { useRouter } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
 
-type RecoveryParams = {
-  access_token: string;
-  refresh_token: string;
-};
 
 export default function SetPasswordPage() {
   const router = useRouter();

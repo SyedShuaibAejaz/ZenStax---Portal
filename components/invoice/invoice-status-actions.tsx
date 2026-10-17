@@ -107,7 +107,7 @@ export function InvoiceStatusActions({
   }
 
   return (
-    <div className="space-y-4 rounded-xl border border-border bg-slate-50 p-5">
+    <div className="space-y-4 rounded-xl border border-border bg-muted/45 p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm font-semibold">
@@ -146,7 +146,7 @@ export function InvoiceStatusActions({
               setAmountPaid(event.target.value)
             }
             disabled={isSaving}
-            className="h-10 rounded-md border border-input bg-white px-3 text-sm"
+            className="h-10 rounded-md border border-input bg-card px-3 text-sm"
           />
         </label>
 

@@ -396,8 +396,8 @@ export function QuotationForm({
 
     setItems((currentItems) =>
       currentItems.map((item) => {
-        const { [columnKey]: _removed, ...rest } =
-          item.customValues ?? {};
+        const rest = { ...(item.customValues ?? {}) };
+        delete rest[columnKey];
 
         return { ...item, customValues: rest };
       }),
@@ -839,7 +839,7 @@ export function QuotationForm({
       onSubmit={handleSubmit}
       className="space-y-6"
     >
-      <div className="rounded-2xl border border-border bg-white p-6 shadow-sm lg:p-8">
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm lg:p-8">
         <div className="mb-6">
           <h3 className="text-lg font-semibold">
             Quotation details
@@ -867,7 +867,7 @@ export function QuotationForm({
               }
               disabled={isSaving}
               required
-              className="h-10 rounded-md border border-input bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+              className="h-10 rounded-md border border-input bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="">
                 Select a client
@@ -926,7 +926,7 @@ export function QuotationForm({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border bg-white p-6 shadow-sm lg:p-8">
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm lg:p-8">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h3 className="text-lg font-semibold">
@@ -1207,7 +1207,7 @@ export function QuotationForm({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-border bg-white p-6 shadow-sm lg:p-8">
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm lg:p-8">
           <div className="grid gap-2">
             <Label htmlFor="discount">
               Discount
@@ -1251,7 +1251,7 @@ export function QuotationForm({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border bg-white p-6 shadow-sm lg:p-8">
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm lg:p-8">
           <h3 className="mb-5 text-lg font-semibold">
             Summary
           </h3>

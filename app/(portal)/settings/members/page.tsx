@@ -25,9 +25,6 @@ type ProfileRow = {
   full_name: string | null;
 };
 
-type PermissionRow = {
-  permission_key: string;
-};
 
 const availablePermissions = [
   "company.view",
@@ -109,7 +106,7 @@ export default async function MembersSettingsPage() {
 
           <Link
             href="/settings"
-            className="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50"
+            className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-muted/45"
           >
             ← Back to settings
           </Link>
@@ -220,7 +217,7 @@ export default async function MembersSettingsPage() {
 
         <Link
           href="/settings"
-          className="inline-flex items-center justify-center rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50"
+          className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-muted/45"
         >
           ← Back to settings
         </Link>

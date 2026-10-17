@@ -95,7 +95,7 @@ export function PortalSidebar({
 
       <aside
         className={[
-          "fixed inset-y-0 left-0 z-50 flex h-screen flex-col overflow-hidden bg-zen-navy text-white",
+          "fixed inset-y-0 left-0 z-50 flex h-dvh flex-col overflow-hidden bg-zen-navy text-white",
           "transition-[width,transform] duration-300 ease-in-out",
           "lg:static lg:z-auto lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full",

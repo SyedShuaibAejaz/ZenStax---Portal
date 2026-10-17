@@ -26,10 +26,10 @@ export default async function ClientsPage() {
 
   return (
     <section>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold">Clients</h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             Store reusable client information.
           </p>
         </div>
@@ -42,9 +42,9 @@ export default async function ClientsPage() {
         </Link>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50">
+      <div className="responsive-table overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+        <table className="w-full min-w-[640px] text-left text-sm">
+          <thead className="border-b border-border bg-muted/45">
             <tr>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Company</th>
@@ -57,7 +57,7 @@ export default async function ClientsPage() {
             {clients?.map((client) => (
               <tr
                 key={client.id}
-                className="border-b border-slate-100 last:border-0"
+                className="border-b border-border last:border-0"
               >
                 <td className="px-4 py-3 font-medium">
   <Link
@@ -83,7 +83,7 @@ export default async function ClientsPage() {
               <tr>
                 <td
                   colSpan={4}
-                  className="px-4 py-10 text-center text-slate-500"
+                  className="px-4 py-10 text-center text-muted-foreground"
                 >
                   No clients added yet.
                 </td>

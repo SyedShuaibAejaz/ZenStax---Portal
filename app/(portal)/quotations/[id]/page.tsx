@@ -140,7 +140,7 @@ export default async function QuotationDetailsPage({
         <div className="flex flex-wrap items-start gap-3">
           <Link
             href="/quotations"
-            className="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50"
+            className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-muted/45"
           >
             Back to quotations
           </Link>
@@ -159,7 +159,7 @@ export default async function QuotationDetailsPage({
               href={`/api/quotations/${quotation.id}/pdf/saved`}
               target="_blank"
               rel="noreferrer"
-              className="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50"
+              className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-muted/45"
             >
               View saved PDF
             </a>
@@ -179,7 +179,7 @@ export default async function QuotationDetailsPage({
         </div>
       </div>
 
-      <div className="space-y-6 rounded-2xl border border-border bg-white p-6 shadow-sm lg:p-8">
+      <div className="space-y-6 rounded-2xl border border-border bg-card p-6 shadow-sm lg:p-8">
         <div className="flex flex-col justify-between gap-6 border-b border-border pb-6 md:flex-row">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -226,7 +226,7 @@ export default async function QuotationDetailsPage({
             className="w-full text-left text-sm"
             style={{ minWidth: 700 + customColumns.length * 120 }}
           >
-            <thead className="border-b border-border bg-slate-50">
+            <thead className="border-b border-border bg-muted/45">
               <tr>
                 <th className="px-4 py-3">Description</th>
 
@@ -245,7 +245,7 @@ export default async function QuotationDetailsPage({
 
             <tbody>
               {quotation.quotation_items.map((item) => (
-                <tr key={item.id} className="border-b border-slate-100">
+                <tr key={item.id} className="border-b border-border">
                   <td className="px-4 py-4">{item.description}</td>
 
                   {customColumns.map((column) => (

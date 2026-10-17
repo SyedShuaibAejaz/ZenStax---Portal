@@ -307,7 +307,7 @@ export function ClientForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-3xl space-y-6 rounded-2xl border border-border bg-white p-6 shadow-sm lg:p-8"
+      className="max-w-3xl space-y-6 rounded-2xl border border-border bg-card p-6 shadow-sm lg:p-8"
     >
       {!isLoadingWorkspace &&
         membership &&
@@ -323,7 +323,7 @@ export function ClientForm({
         )}
 
       {isLoadingWorkspace && (
-        <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+        <div className="rounded-lg border border-border bg-muted/45 px-4 py-3 text-sm text-muted-foreground">
           Loading workspace permissions...
         </div>
       )}

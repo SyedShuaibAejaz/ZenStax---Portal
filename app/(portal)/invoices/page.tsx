@@ -81,9 +81,9 @@ export default async function InvoicesPage() {
         </Link>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-border bg-white shadow-sm">
+      <div className="responsive-table overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
         <table className="w-full min-w-[780px] text-left text-sm">
-          <thead className="border-b border-border bg-slate-50">
+          <thead className="border-b border-border bg-muted/45">
             <tr>
               <th className="px-4 py-3">Invoice</th>
               <th className="px-4 py-3">Client</th>
@@ -110,7 +110,7 @@ export default async function InvoicesPage() {
               return (
                 <tr
                   key={invoice.id}
-                  className="border-b border-slate-100 last:border-0"
+                  className="border-b border-border last:border-0"
                 >
                   <td className="px-4 py-4 font-medium">
                     <Link

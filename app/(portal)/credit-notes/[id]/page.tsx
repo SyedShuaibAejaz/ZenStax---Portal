@@ -81,7 +81,7 @@ export default async function CreditNoteDetailsPage({ params }: PageProps) {
         <div className="flex flex-wrap items-start gap-3">
           <Link
             href="/credit-notes"
-            className="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50"
+            className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-muted/45"
           >
             Back to credit notes
           </Link>
@@ -95,7 +95,7 @@ export default async function CreditNoteDetailsPage({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="space-y-6 rounded-2xl border border-border bg-white p-6 shadow-sm lg:p-8">
+      <div className="space-y-6 rounded-2xl border border-border bg-card p-6 shadow-sm lg:p-8">
         <div className="grid gap-6 md:grid-cols-2">
           <div>
             <p className="text-sm text-muted-foreground">Credited to</p>
@@ -117,9 +117,9 @@ export default async function CreditNoteDetailsPage({ params }: PageProps) {
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-border">
+        <div className="responsive-table overflow-x-auto rounded-xl border border-border">
           <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="border-b border-border bg-slate-50">
+            <thead className="border-b border-border bg-muted/45">
               <tr>
                 <th className="px-4 py-3">Description</th>
                 <th className="px-4 py-3 text-right">Qty</th>
@@ -130,7 +130,7 @@ export default async function CreditNoteDetailsPage({ params }: PageProps) {
             </thead>
             <tbody>
               {note.credit_note_items?.map((item) => (
-                <tr key={item.id} className="border-b border-slate-100 last:border-0">
+                <tr key={item.id} className="border-b border-border last:border-0">
                   <td className="px-4 py-3">{item.description}</td>
                   <td className="px-4 py-3 text-right">{Number(item.quantity)}</td>
                   <td className="px-4 py-3 text-right">{money(item.unit_price, note.currency)}</td>

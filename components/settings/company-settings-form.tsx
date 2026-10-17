@@ -30,7 +30,7 @@ const initialState: SettingsFormState = {
 };
 
 const inputClass =
-  "w-full rounded-lg border border-border bg-white px-3 py-2 text-sm outline-none focus:border-zen-orange focus:ring-2 focus:ring-orange-100 disabled:bg-slate-50 disabled:text-muted-foreground";
+  "w-full rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-zen-orange focus:ring-2 focus:ring-orange-100 disabled:bg-muted/45 disabled:text-muted-foreground";
 
 /* ---------- Building blocks (defined outside the form on purpose) ---------- */
 
@@ -109,7 +109,7 @@ function Card({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <h3 className="font-semibold">{title}</h3>
       {description && (
         <p className="mt-1 text-sm text-muted-foreground">{description}</p>
@@ -217,7 +217,7 @@ export function CompanySettingsForm({
 
 
       {canEdit && (
-        <div className="sticky bottom-0 flex items-center justify-end gap-4 border-t border-border bg-white/90 py-4 backdrop-blur">
+        <div className="sticky bottom-0 flex items-center justify-end gap-4 border-t border-border bg-card/90 py-4 backdrop-blur">
           {state.message && (
             <p
               role="status"

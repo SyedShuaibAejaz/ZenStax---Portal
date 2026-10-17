@@ -34,11 +34,11 @@ export default async function PortalLayout({
 
   return (
     <PortalShellProvider>
-      <div className="flex h-screen overflow-hidden bg-background">
+      <div className="flex h-dvh overflow-hidden bg-background">
         <PortalSidebar canManageSettings={canManageSettings} />
 
         <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
-          <header className="z-30 flex h-24 shrink-0 items-center justify-between border-b border-border bg-white px-5 lg:px-8">
+          <header className="z-30 flex h-16 shrink-0 items-center justify-between border-b border-border bg-background/95 px-4 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:h-20 sm:px-5 lg:h-24 lg:px-8">
             <div className="flex items-center gap-3">
               <MobileMenuButton />
 

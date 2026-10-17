@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { attachmentHeader, buildPdfFileName } from "@/lib/pdf/file-name";
+import { buildPdfFileName } from "@/lib/pdf/file-name";
 import { createClient } from "@/lib/supabase/server";
 
 type RouteContext = {

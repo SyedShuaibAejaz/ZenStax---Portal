@@ -190,7 +190,7 @@ export function MembersManager({
     setError(null);
     setMessage(null);
 
-    const { data, error: updateError } =
+    const { error: updateError } =
       await supabase.rpc(
         "update_workspace_member_role",
         {
@@ -319,7 +319,7 @@ export function MembersManager({
       {canManage && (
         <form
           onSubmit={inviteMember}
-          className="rounded-2xl border border-border bg-white p-6 shadow-sm"
+          className="rounded-2xl border border-border bg-card p-6 shadow-sm"
         >
           <h2 className="text-xl font-semibold">
             Add workspace member
@@ -362,7 +362,7 @@ export function MembersManager({
                   )
                 }
                 disabled={isInviting}
-                className="h-10 rounded-md border border-input bg-white px-3 text-sm"
+                className="h-10 rounded-md border border-input bg-card px-3 text-sm"
               >
                 {roleOptions.map((option) => (
                   <option
@@ -387,9 +387,9 @@ export function MembersManager({
       )}
 
       <div className="grid gap-6 xl:grid-cols-[1fr_390px]">
-        <div className="overflow-x-auto rounded-2xl border border-border bg-white shadow-sm">
+        <div className="responsive-table overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
           <table className="w-full min-w-[620px] text-left text-sm">
-            <thead className="border-b border-border bg-slate-50">
+            <thead className="border-b border-border bg-muted/45">
               <tr>
                 <th className="px-5 py-4">
                   Member
@@ -419,7 +419,7 @@ export function MembersManager({
                 return (
                   <tr
                     key={member.user_id}
-                    className="border-b border-slate-100 last:border-0"
+                    className="border-b border-border last:border-0"
                   >
                     <td className="px-5 py-4">
                       <p className="font-medium">
@@ -450,7 +450,7 @@ export function MembersManager({
                             )
                           }
                           disabled={isSaving}
-                          className="h-9 rounded-md border border-input bg-white px-2 text-sm capitalize"
+                          className="h-9 rounded-md border border-input bg-card px-2 text-sm capitalize"
                         >
                           {roleOptions.map((option) => (
                             <option
@@ -462,7 +462,7 @@ export function MembersManager({
                           ))}
                         </select>
                       ) : (
-                        <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium capitalize text-slate-700">
+                        <span className="inline-flex rounded-full bg-muted px-3 py-1 text-xs font-medium capitalize text-foreground">
                           {member.role}
                         </span>
                       )}
@@ -513,7 +513,7 @@ export function MembersManager({
         </div>
 
         {canManage && (
-          <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
             <h2 className="text-xl font-semibold">
               Member permissions
             </h2>
@@ -524,7 +524,7 @@ export function MembersManager({
               </p>
             ) : (
               <>
-                <div className="mt-4 rounded-lg bg-slate-50 p-4">
+                <div className="mt-4 rounded-lg bg-muted/45 p-4">
                   <p className="font-medium">
                     {selectedMember.full_name ||
                       selectedMember.email ||
@@ -540,7 +540,7 @@ export function MembersManager({
                   {availablePermissions.map((permission) => (
                     <label
                       key={permission}
-                      className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-3 hover:bg-slate-50"
+                      className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-3 hover:bg-muted/45"
                     >
                       <input
                         type="checkbox"

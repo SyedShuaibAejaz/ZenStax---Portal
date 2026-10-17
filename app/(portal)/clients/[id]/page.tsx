@@ -34,7 +34,7 @@ export default async function ClientDetailsPage({
         <div>
           <Link
           href={`/clients`}
-          className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#E85E17]"
+          className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-[#E85E17]"
         >
           <span aria-hidden="true">
             ←
@@ -63,7 +63,7 @@ export default async function ClientDetailsPage({
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
-        <div className="rounded-xl border border-border bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <h3 className="mb-4 font-semibold">Contact information</h3>
 
           <dl className="space-y-4 text-sm">
@@ -96,7 +96,7 @@ export default async function ClientDetailsPage({
           </dl>
         </div>
 
-        <div className="rounded-xl border border-border bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <h3 className="mb-4 font-semibold">Address and notes</h3>
 
           <div className="space-y-5 text-sm">

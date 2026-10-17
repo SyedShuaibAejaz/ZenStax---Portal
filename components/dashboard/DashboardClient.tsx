@@ -59,12 +59,12 @@ function Card({
 }) {
   return (
     <section
-      className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ${className}`}
+      className={`rounded-2xl border border-border bg-card p-5 shadow-sm ${className}`}
     >
       {(title || action) && (
         <div className="mb-4 flex items-center justify-between gap-3">
           {title && (
-            <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+            <h2 className="text-sm font-semibold text-foreground">{title}</h2>
           )}
           {action}
         </div>
@@ -90,25 +90,25 @@ function Kpi({
   href?: string;
 }) {
   const accents = {
-    navy: "bg-[#071B31]/5 text-[#071B31]",
+    navy: "bg-primary/10 text-primary",
     red: "bg-red-50 text-red-600",
-    orange: "bg-orange-50 text-[#E85D04]",
+    orange: "bg-zen-orange/10 text-zen-orange",
     emerald: "bg-emerald-50 text-emerald-600",
   };
 
   const body = (
-    <div className="flex h-full flex-col justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow">
+    <div className="flex h-full flex-col justify-between gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:border-border hover:shadow">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-slate-500">{label}</p>
+        <p className="text-sm font-medium text-muted-foreground">{label}</p>
         <span className={`rounded-lg p-2 ${accents[accent]}`}>
           <Icon className="h-4 w-4" />
         </span>
       </div>
       <div>
-        <p className="text-2xl font-semibold tracking-tight text-slate-900 tabular-nums">
+        <p className="text-2xl font-semibold tracking-tight text-foreground tabular-nums">
           {value}
         </p>
-        <div className="mt-1 text-xs text-slate-500">{detail}</div>
+        <div className="mt-1 text-xs text-muted-foreground">{detail}</div>
       </div>
     </div>
   );
@@ -127,8 +127,8 @@ function StatusPill({ status, quotation = false }: { status: string; quotation?:
     accepted: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
     converted: "bg-violet-50 text-violet-700 ring-violet-600/20",
     rejected: "bg-red-50 text-red-700 ring-red-600/20",
-    expired: "bg-slate-100 text-slate-500 ring-slate-500/20",
-    draft: "bg-slate-50 text-slate-600 ring-slate-500/20",
+    expired: "bg-muted text-muted-foreground ring-slate-500/20",
+    draft: "bg-muted/45 text-muted-foreground ring-slate-500/20",
     sent: "bg-blue-50 text-blue-700 ring-blue-600/20",
   };
 
@@ -162,11 +162,11 @@ function RecentTable({
 }) {
   if (rows.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-slate-200 px-4 py-8 text-center">
-        <p className="text-sm text-slate-500">{emptyText}</p>
+      <div className="rounded-xl border border-dashed border-border px-4 py-8 text-center">
+        <p className="text-sm text-muted-foreground">{emptyText}</p>
         <Link
           href={emptyHref}
-          className="mt-3 inline-block text-sm font-medium text-[#E85D04] hover:underline"
+          className="mt-3 inline-block text-sm font-medium text-zen-orange hover:underline"
         >
           {emptyCta}
         </Link>
@@ -180,16 +180,16 @@ function RecentTable({
         <li key={row.id}>
           <Link
             href={row.href}
-            className="-mx-2 flex items-center justify-between gap-3 rounded-lg px-2 py-3 hover:bg-slate-50"
+            className="-mx-2 flex items-center justify-between gap-3 rounded-lg px-2 py-3 hover:bg-muted/45"
           >
             <div className="min-w-0">
-              <p className="text-sm font-medium text-slate-900">{row.number}</p>
-              <p className="truncate text-xs text-slate-500">
+              <p className="text-sm font-medium text-foreground">{row.number}</p>
+              <p className="truncate text-xs text-muted-foreground">
                 {row.client} · {row.date}
               </p>
             </div>
             <div className="flex shrink-0 flex-col items-end gap-1">
-              <span className="text-sm font-medium tabular-nums text-slate-900">
+              <span className="text-sm font-medium tabular-nums text-foreground">
                 {format(row.amount)}
               </span>
               <StatusPill status={row.status} quotation={quotation} />
@@ -215,15 +215,15 @@ export default function DashboardClient({
   const attentionIcon = {
     overdue: <AlertTriangle className="h-4 w-4 text-red-600" />,
     expiring: <Clock className="h-4 w-4 text-amber-600" />,
-    draft: <FilePen className="h-4 w-4 text-slate-500" />,
+    draft: <FilePen className="h-4 w-4 text-muted-foreground" />,
   };
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm text-slate-500">{todayLabel}</p>
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+          <p className="text-sm text-muted-foreground">{todayLabel}</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             {greetingName ? `Welcome back, ${greetingName}` : "Overview"}
           </h2>
         </div>
@@ -232,13 +232,13 @@ export default function DashboardClient({
           <div className="flex gap-2">
             <Link
               href="/quotations/new"
-              className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/45"
             >
               New quotation
             </Link>
             <Link
               href="/invoices/new"
-              className="rounded-lg bg-[#E85D04] px-4 py-2 text-sm font-medium text-white hover:bg-[#cf5203]"
+              className="rounded-lg bg-zen-orange px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
             >
               New invoice
             </Link>
@@ -296,12 +296,12 @@ export default function DashboardClient({
           title="Invoiced per month"
           className="xl:col-span-2"
           action={
-            <div className="flex items-center gap-4 text-xs text-slate-500">
+            <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-sm bg-[#071B31]" /> Invoiced
+                <span className="h-2.5 w-2.5 rounded-sm bg-primary" /> Invoiced
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-sm bg-[#E85D04]" /> Paid so far
+                <span className="h-2.5 w-2.5 rounded-sm bg-zen-orange" /> Paid so far
               </span>
             </div>
           }
@@ -310,22 +310,22 @@ export default function DashboardClient({
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={metrics.monthly} barGap={2}>
-                  <CartesianGrid vertical={false} stroke="#EEF2F6" />
+                  <CartesianGrid vertical={false} stroke="var(--border)" />
                   <XAxis
                     dataKey="label"
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fill: "#64748B", fontSize: 12 }}
+                    tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
                   />
                   <YAxis
                     tickLine={false}
                     axisLine={false}
                     width={48}
-                    tick={{ fill: "#64748B", fontSize: 12 }}
+                    tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
                     tickFormatter={(value: number) => money.short(value)}
                   />
                   <Tooltip
-                    cursor={{ fill: "#F1F5F9" }}
+                    cursor={{ fill: "var(--muted)" }}
                     formatter={(value, name) => [
                       money.full(Number(value)),
                       name === "invoiced" ? "Invoiced" : "Paid so far",
@@ -336,13 +336,13 @@ export default function DashboardClient({
                       fontSize: 12,
                     }}
                   />
-                  <Bar dataKey="invoiced" fill="#071B31" radius={[4, 4, 0, 0]} maxBarSize={28} />
-                  <Bar dataKey="collectedShare" fill="#E85D04" radius={[4, 4, 0, 0]} maxBarSize={28} />
+                  <Bar dataKey="invoiced" fill="var(--primary)" radius={[4, 4, 0, 0]} maxBarSize={28} />
+                  <Bar dataKey="collectedShare" fill="var(--zen-orange)" radius={[4, 4, 0, 0]} maxBarSize={28} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="flex h-64 items-center justify-center rounded-xl border border-dashed border-slate-200 text-sm text-slate-500">
+            <div className="flex h-64 items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted-foreground">
               Monthly totals appear once you send your first invoice.
             </div>
           )}
@@ -351,8 +351,8 @@ export default function DashboardClient({
         <Card title="Needs attention">
           {metrics.attention.length === 0 ? (
             <div className="flex h-64 flex-col items-center justify-center text-center">
-              <p className="text-sm font-medium text-slate-900">All clear</p>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="text-sm font-medium text-foreground">All clear</p>
+              <p className="mt-1 text-sm text-muted-foreground">
                 No overdue invoices, expiring quotations or forgotten drafts.
               </p>
             </div>
@@ -362,14 +362,14 @@ export default function DashboardClient({
                 <li key={item.href + item.kind}>
                   <Link
                     href={item.href}
-                    className="-mx-2 flex items-start gap-3 rounded-lg px-2 py-2.5 hover:bg-slate-50"
+                    className="-mx-2 flex items-start gap-3 rounded-lg px-2 py-2.5 hover:bg-muted/45"
                   >
                     <span className="mt-0.5">{attentionIcon[item.kind]}</span>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-slate-900">{item.title}</p>
-                      <p className="truncate text-xs text-slate-500">{item.subtitle}</p>
+                      <p className="text-sm font-medium text-foreground">{item.title}</p>
+                      <p className="truncate text-xs text-muted-foreground">{item.subtitle}</p>
                     </div>
-                    <span className="shrink-0 text-sm tabular-nums text-slate-700">
+                    <span className="shrink-0 text-sm tabular-nums text-foreground">
                       {money.compact(item.amount)}
                     </span>
                   </Link>
@@ -385,7 +385,7 @@ export default function DashboardClient({
         <Card title="Receivables by age">
           {agingTotal > 0 ? (
             <>
-              <div className="flex h-3 overflow-hidden rounded-full bg-slate-100">
+              <div className="flex h-3 overflow-hidden rounded-full bg-muted">
                 {metrics.aging.map((bucket) =>
                   bucket.amount > 0 ? (
                     <div
@@ -400,14 +400,14 @@ export default function DashboardClient({
               <dl className="mt-4 space-y-2.5">
                 {metrics.aging.map((bucket) => (
                   <div key={bucket.label} className="flex items-center justify-between text-sm">
-                    <dt className="flex items-center gap-2 text-slate-600">
+                    <dt className="flex items-center gap-2 text-muted-foreground">
                       <span className={`h-2.5 w-2.5 rounded-full ${bucket.tone}`} />
                       {bucket.label}
                       {bucket.count > 0 && (
-                        <span className="text-xs text-slate-400">({bucket.count})</span>
+                        <span className="text-xs text-muted-foreground">({bucket.count})</span>
                       )}
                     </dt>
-                    <dd className="tabular-nums font-medium text-slate-900">
+                    <dd className="tabular-nums font-medium text-foreground">
                       {money.full(bucket.amount)}
                     </dd>
                   </div>
@@ -415,7 +415,7 @@ export default function DashboardClient({
               </dl>
             </>
           ) : (
-            <p className="py-8 text-center text-sm text-slate-500">
+            <p className="py-8 text-center text-sm text-muted-foreground">
               No money owed to you right now.
             </p>
           )}
@@ -423,27 +423,27 @@ export default function DashboardClient({
 
         <Card
           title="VAT this quarter"
-          action={<span className="text-xs text-slate-500">{metrics.vat.label}</span>}
+          action={<span className="text-xs text-muted-foreground">{metrics.vat.label}</span>}
         >
           <dl className="space-y-2.5 text-sm">
             <div className="flex justify-between">
-              <dt className="text-slate-600">Taxable sales</dt>
-              <dd className="tabular-nums text-slate-900">{money.full(metrics.vat.taxableSales)}</dd>
+              <dt className="text-muted-foreground">Taxable sales</dt>
+              <dd className="tabular-nums text-foreground">{money.full(metrics.vat.taxableSales)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-600">Output VAT on invoices</dt>
-              <dd className="tabular-nums text-slate-900">{money.full(metrics.vat.outputVat)}</dd>
+              <dt className="text-muted-foreground">Output VAT on invoices</dt>
+              <dd className="tabular-nums text-foreground">{money.full(metrics.vat.outputVat)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-600">Less credit notes</dt>
-              <dd className="tabular-nums text-slate-900">- {money.full(metrics.vat.creditVat)}</dd>
+              <dt className="text-muted-foreground">Less credit notes</dt>
+              <dd className="tabular-nums text-foreground">- {money.full(metrics.vat.creditVat)}</dd>
             </div>
-            <div className="flex justify-between border-t border-slate-100 pt-2.5 font-semibold">
-              <dt className="text-slate-900">Net output VAT</dt>
-              <dd className="tabular-nums text-[#E85D04]">{money.full(metrics.vat.netVat)}</dd>
+            <div className="flex justify-between border-t border-border pt-2.5 font-semibold">
+              <dt className="text-foreground">Net output VAT</dt>
+              <dd className="tabular-nums text-zen-orange">{money.full(metrics.vat.netVat)}</dd>
             </div>
           </dl>
-          <p className="mt-4 text-xs leading-5 text-slate-400">
+          <p className="mt-4 text-xs leading-5 text-muted-foreground">
             Calendar quarter, by invoice date. Check it against your FTA tax
             period; input VAT on purchases isn&apos;t tracked here.
           </p>
@@ -452,13 +452,13 @@ export default function DashboardClient({
         <Card
           title="Top clients by balance"
           action={
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-muted-foreground">
               {metrics.clientCount} client{metrics.clientCount === 1 ? "" : "s"}
             </span>
           }
         >
           {metrics.topClients.length === 0 ? (
-            <p className="py-8 text-center text-sm text-slate-500">
+            <p className="py-8 text-center text-sm text-muted-foreground">
               Client balances appear once invoices are sent.
             </p>
           ) : (
@@ -469,18 +469,18 @@ export default function DashboardClient({
                 return (
                   <li key={client.name}>
                     <div className="flex items-baseline justify-between gap-3 text-sm">
-                      <span className="truncate font-medium text-slate-900">{client.name}</span>
-                      <span className="shrink-0 tabular-nums text-slate-900">
+                      <span className="truncate font-medium text-foreground">{client.name}</span>
+                      <span className="shrink-0 tabular-nums text-foreground">
                         {money.full(client.outstanding)}
                       </span>
                     </div>
-                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
                       <div
-                        className="h-full rounded-full bg-[#071B31]"
+                        className="h-full rounded-full bg-primary"
                         style={{ width: `${share * 100}%` }}
                       />
                     </div>
-                    <p className="mt-1 text-xs text-slate-400">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       of {money.full(client.invoiced)} invoiced
                     </p>
                   </li>
@@ -496,7 +496,7 @@ export default function DashboardClient({
         <Card
           title="Recent invoices"
           action={
-            <Link href="/invoices" className="text-xs font-medium text-[#E85D04] hover:underline">
+            <Link href="/invoices" className="text-xs font-medium text-zen-orange hover:underline">
               View all
             </Link>
           }
@@ -513,7 +513,7 @@ export default function DashboardClient({
         <Card
           title="Recent quotations"
           action={
-            <Link href="/quotations" className="text-xs font-medium text-[#E85D04] hover:underline">
+            <Link href="/quotations" className="text-xs font-medium text-zen-orange hover:underline">
               View all
             </Link>
           }
@@ -530,7 +530,7 @@ export default function DashboardClient({
       </section>
 
       {metrics.otherCurrencyCount > 0 && (
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-muted-foreground">
           Totals are in {metrics.currency}. {metrics.otherCurrencyCount} document
           {metrics.otherCurrencyCount === 1 ? "" : "s"} in other currencies are
           not included.

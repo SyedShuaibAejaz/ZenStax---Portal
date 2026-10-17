@@ -102,7 +102,7 @@ export default async function NewCreditNotePage({ params }: PageProps) {
 
         <Link
           href={`/invoices/${invoice.id}`}
-          className="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50"
+          className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-muted/45"
         >
           Back to invoice
         </Link>
